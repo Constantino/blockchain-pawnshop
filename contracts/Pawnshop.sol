@@ -4,9 +4,11 @@ pragma solidity ^0.8.0;
 contract Pawnshop{
     
     uint256 dailyInterestRate;
+    address owner;
     
     constructor(uint256 _rate){
         dailyInterestRate = _rate;
+        owner = msg.sender;
     }
     
     enum Status { Open, Locked, Paid, Terminated }
