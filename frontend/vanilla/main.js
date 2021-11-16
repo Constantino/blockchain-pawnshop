@@ -4,6 +4,8 @@ const serverUrl = "https://eplrzhxmsawi.usemoralis.com:2053/server";
 const appId = "pUNHFsDneuqyIWs6wGA3z0eM8GgtOU0VzryS9gBk";
 Moralis.start({ serverUrl, appId });
 
+var information = []
+
 /* TODO: Add Moralis Authentication code */
 async function login() {
     let user = Moralis.User.current();
@@ -20,7 +22,7 @@ async function login() {
         });
     }
   }
-  async function logOut() {
+async function logOut() {
     await Moralis.User.logOut();
     console.log("logged out");
   }
@@ -39,14 +41,25 @@ async function balance(){
 // run the query
   const results = await query.find();
   console.log(results)
+  information = results
+  
   }
 
+
 async function transfer(){
-    // sending a token with token id = 1
-  const options = {type: "erc721",  
-  receiver: "0xd659f00DC394a1e2F775F8F9168046C123514DB7",
-  contractAddress: "0xe128abbb6ff91f9b6faa7cd062d92101fdab4806",
-  tokenId: 6}
+  balance()
+  const type = information[0].attributes.contract_type
+  const lowType =  type.toLowerCase()
+  const receiver = "0xa178490D195eDCAA856f1280B2b44Ad79022f9b4"
+  const contractAdress = information[0].attributes.token_address
+  const tokenId = information[0].attributes.token_id
+
+  //console.log(type, receiver, contractAdress, tokenId)
+
+  const options = {type: lowType,  
+  receiver: receiver,
+  contractAddress: contractAdress,
+  tokenId: tokenId}
   let result = await Moralis.transfer(options)
   }
 
