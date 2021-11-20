@@ -43,21 +43,19 @@ contract Counter is KeeperCompatibleInterface {
     //When checkUpKeep its already to launch, this task is executed
     function performUpkeep(bytes calldata) external override {
         lastTimeStamp = block.timestamp;
-        counter = 0;
-        counter = counter + 1;
         ContractB contractB = ContractB(contractBAddress);
-        contractB.setTokenName(counter);
+        contractB.setTokenName(lastTimeStamp);
     }
 }
 
 contract ContractB {
-    uint256 public tokenName = uint256(2);
+    uint256 public lastTimeStamp;
 
-    function setTokenName(uint256 _newName) external {
-        tokenName = _newName;
+    function setTokenName(uint256 _timeStamp) external {
+        lastTimeStamp = _timeStamp;
     }
 
     function getTokenName() public view returns (uint256) {
-        return tokenName;
+        return lastTimeStamp;
     }
 }
