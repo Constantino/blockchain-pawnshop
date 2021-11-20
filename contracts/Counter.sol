@@ -44,14 +44,14 @@ contract Counter is KeeperCompatibleInterface {
     function performUpkeep(bytes calldata) external override {
         lastTimeStamp = block.timestamp;
         ContractB contractB = ContractB(contractBAddress);
-        contractB.setTokenName(lastTimeStamp);
+        contractB.changeStatus(lastTimeStamp);
     }
 }
 
 contract ContractB {
     uint256 public lastTimeStamp;
 
-    function setTokenName(uint256 _timeStamp) external {
+    function changeStatus(uint256 _timeStamp) external {
         lastTimeStamp = _timeStamp;
     }
 
