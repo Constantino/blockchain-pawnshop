@@ -143,16 +143,22 @@ contract Pawnshop{
             } else if(status == Status.Open) {
                 // If lending is open and did not complete funding on time
                 if(currentTimestamp >= lendings[id].closingTime){
-                    lendings[id].status = Status.Locked;
+                    lendings[id].status = Status.Terminated;
+                    // Return funds to participants
+                    returnFunds(id);
                 }        
             } else if(status == Status.Locked) {
                 // If lending is locked and user did not pay on time
                 if(currentTimestamp >= lendings[id].endTime){
-                    lendings[id].status = Status.Locked;
+                    lendings[id].status = Status.Terminated;
                 }
             } 
         }
         
+        
+    }
+    
+    function returnFunds(uint256 _lendingId) private {
         
     }
     
