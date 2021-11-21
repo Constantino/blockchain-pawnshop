@@ -13,7 +13,7 @@ contract Pawnshop{
         owner = msg.sender;
     }
     
-    enum Status { Open, Locked, Paid, Terminated }
+    enum Status { Review, Open, Locked, Paid, Terminated }
     enum ParticipantType { Borrower, Lender }
     
     uint256 counter;
@@ -37,6 +37,7 @@ contract Pawnshop{
         uint256 dailyInterestRate;
         
         uint256 openingTime;
+        uint256 reviewingTime;
         uint256 closingTime;
         uint256 startTime;
         uint256 endTime;
@@ -67,6 +68,7 @@ contract Pawnshop{
         require(_debtTerm > 1, "Please provide a debt term greater than 1 day.");
         
         uint256 openingTime = block.timestamp;
+        uint256 reviewingTime = block.timestamp+86400; // now + 1 day
         // closingTime equals openingTime + X days
         uint256 closingTime = openingTime+86400*_expirationTerm;
         
@@ -76,7 +78,7 @@ contract Pawnshop{
         
         // TODO: Receive NFT
         
-        lendings.push(Lending(id, msg.sender,_amount, chunkPrice, 0.0001 ether, 0, dailyInterestRate, openingTime, closingTime, 0, 0, _debtTerm, _tokenId, _tokenContract, Status.Open));
+        lendings.push(Lending(id, msg.sender,_amount, chunkPrice, 0.0001 ether, 0, dailyInterestRate, openingTime, reviewingTime, closingTime, 0, 0, _debtTerm, _tokenId, _tokenContract, Status.Review));
         
         participants[msg.sender].push(Participation(id, _amount, ParticipantType.Borrower));
         counter++;
@@ -109,7 +111,7 @@ contract Pawnshop{
         lendings[_lendingId].fund += msg.value;
         
         if(lendings[_lendingId].fund == lendings[_lendingId].amount) {
-            lockLending(_lendingId); // a este le puede salir m´ás cara la tx
+            lockLending(_lendingId);
         }
         
         participants[msg.sender].push(Participation(_lendingId, msg.value, ParticipantType.Lender));
@@ -126,13 +128,45 @@ contract Pawnshop{
         lendings[_lendingId].debt = lendings[_lendingId].amount + interest;
     }
     
+    function statusUpdater() external {
+        uint256 currentTimestamp = block.timestamp;
+        uint256 lendingsLength = lendings.length;
+        for(uint256 id; id < lendingsLength; id++) {
+            
+            Status status = lendings[id].status;
+            
+            if(status == Status.Review) {
+                if(currentTimestamp >= lendings[id].reviewingTime) {
+                    lendings[id].status = Status.Terminated;
+                }
+
+            } else if(status == Status.Open) {
+                // If lending is open and did not complete funding on time
+                if(currentTimestamp >= lendings[id].closingTime){
+                    lendings[id].status = Status.Locked;
+                }        
+            } else if(status == Status.Locked) {
+                // If lending is locked and user did not pay on time
+                if(currentTimestamp >= lendings[id].endTime){
+                    lendings[id].status = Status.Locked;
+                }
+            } 
+        }
+        
+        
+    }
+    
     function terminateLending(uint256 _lendingId) private {
         
-        if(lendings[_lendingId].status == Status.Paid) {
-            // TODO
-        } else {
-            // TODO: distributePayments
-            // TODO: authorizie to give back the NFT
+        Status status = lendings[_lendingId].status;
+        
+        if (lendings[_lendingId].status == Status.Open) {
+            
+        }
+        else if(lendings[_lendingId].status == Status.Locked) {
+            // TODO: Auction of NFT
+        } else if(lendings[_lendingId].status == Status.Review) {
+            // TODO: discard lending
         }
         
         lendings[_lendingId].status = Status.Terminated;
@@ -141,10 +175,12 @@ contract Pawnshop{
     function pay(uint256 _lendingId) public payable {
         
         require(msg.value == lendings[_lendingId].debt, "Insufficient payment.");
+        require(lendings[_lendingId].status == Status.Locked);
+        require(block.timestamp < lendings[_lendingId].endTime, "Payment not allowed, end time reached.");
         lendings[_lendingId].status = Status.Paid;
         // TODO: Distribute payment to lenders
         // TODO: Give back the NFT to borrower
-        
+        // terminateLending
     }
     
     function distributePayments() private {
