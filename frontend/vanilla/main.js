@@ -40,17 +40,52 @@ async function balance(){
 
 // run the query
   const results = await query.find();
-  console.log(results)
-
+  //console.log(results)
+    var URLx="";
     let ele = document.getElementById('iterative');
-    information = results
-    for (const index in information) {
-      ele.innerHTML +='<div class="col"> <div class="card shadow-sm"> <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"> <title>Placeholder</title> <rect width="100%" height="100%" fill="#55595c"/> <text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text> </svg> <div class="card-body"> <p class="card-text">' + information[index].attributes.token_id +'</p><p class="card-text">' + information[index].attributes.name +'</p><p class="card-text">' + information[index].attributes.symbol +'</p><div class="d-flex justify-content-between align-items-center"> <div class="btn-group"><button type="button" class="btn btn-sm btn-outline-secondary">View</button> <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button></div><small class="text-muted">9 mins</small> </div></div></div></div>';    }
+    information = results;
 
     
+
+    for (const index in information) {
+      
+      if(information[index].attributes.contract_type=="ERC721")
+      {
+      URLx= 'https://testnets-api.opensea.io/api/v1/asset/' + information[index].attributes.token_address  +'/'+information[index].attributes.token_id+'/';
+      var metadata="";
+      metadata=getMetadata(URLx); 
+      await delay(1.2);
+      var data="";
+      metadata.then(function(result) {
+        // here you can use the result of promise
+              data= result.image_url;
+              console.log(data)
+              if(data !=""){
+                ele.innerHTML +='<div class="col"> <div class="card shadow-sm"> <img width="100%" height="100%" alt="NFT" src=' +result.image_url +'> <div class="card-body"> <p class="card-text">' + information[index].attributes.token_id +'</p><p class="card-text">' + information[index].attributes.name +'</p><p class="card-text">' + information[index].attributes.symbol +'</p><div class="d-flex justify-content-between align-items-center"> <div class="btn-group"><button type="button" class="btn btn-sm btn-outline-secondary">View</button> <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button></div><small class="text-muted">9 mins</small> </div></div></div></div>';
+              }
+              else
+              {
+                ele.innerHTML +='<div class="col"><div class="card shadow-sm"> <canvas width="100%" height="100%" style="border:1px solid;background-color:#007ad5"> </canvas><div class="card-body"> <p class="card-text">' + information[index].attributes.token_id +'</p><p class="card-text">' + information[index].attributes.name +'</p><p class="card-text">' + information[index].attributes.symbol +'</p><div class="d-flex justify-content-between align-items-center"> <div class="btn-group"> <button type="button" class="btn btn-sm btn-outline-secondary">View</button> <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button> </div><small class="text-muted">9 mins</small> </div></div></div></div>';
+              }
+      });
+      }
+      }
+     
+   
+      
     
   }
-
+function delay(n){
+    return new Promise(function(resolve){
+        setTimeout(resolve,n*1000);
+    });
+}
+async function getMetadata(url) 
+  {
+    let response = await fetch(url);
+    let data = await response.json()
+    return data;
+  }
 
 async function transfer(){
   balance()
