@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT 
 pragma solidity ^0.8.0;
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 contract Pawnshop{
     
@@ -129,26 +130,39 @@ contract Pawnshop{
     }
     
     function statusUpdater() external {
+        
         uint256 currentTimestamp = block.timestamp;
         uint256 lendingsLength = lendings.length;
+        
         for(uint256 id; id < lendingsLength; id++) {
             
             Status status = lendings[id].status;
             
             if(status == Status.Review) {
-                if(currentTimestamp >= lendings[id].reviewingTime) {
-                    lendings[id].status = Status.Terminated;
+                
+                ERC721 xContract = ERC721(lendings[id].nftContract);
+                address currentOwner = xContract.ownerOf(lendings[id].nftId);
+                
+                // if user transfered the NFT to the pawnshop, then set lending status to Open to receive funding
+                if(currentOwner == address(this)){
+                    lendings[id].status = Status.Open;
+                } else {
+                    // Otherwise, check if reviewing time has been exceeded, to terminate lending
+                    if(currentTimestamp > lendings[id].reviewingTime) {
+                        lendings[id].status = Status.Terminated;
+                    }
                 }
-
+            
             } else if(status == Status.Open) {
-                // If lending is open and did not complete funding on time
+                // If lending is open and did not complete funding on time, then terminate lending and return funds
                 if(currentTimestamp >= lendings[id].closingTime){
                     lendings[id].status = Status.Terminated;
                     // Return funds to participants
                     returnFunds(id);
+                    returnNFT(id);
                 }        
             } else if(status == Status.Locked) {
-                // If lending is locked and user did not pay on time
+                // If lending is locked and user did not pay on time, then terminate lending
                 if(currentTimestamp >= lendings[id].endTime){
                     lendings[id].status = Status.Terminated;
                 }
@@ -159,6 +173,10 @@ contract Pawnshop{
     }
     
     function returnFunds(uint256 _lendingId) private {
+        
+    }
+    
+    function returnNFT(uint256 _lendingId) private {
         
     }
     
