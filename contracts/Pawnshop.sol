@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT 
 pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "./NFTHandler.sol";
 
-contract Pawnshop{
+contract Pawnshop is NFTHandler{
     
     uint256 dailyInterestRate;
     address owner;
@@ -189,7 +190,7 @@ contract Pawnshop{
     }
     
     function returnNFT(uint256 _lendingId) private {
-        // TODO
+        psTransferNFT(lendings[_lendingId].borrower, lendings[_lendingId].tokenId, lendings[_lendingId].tokenContract);
     }
     
     
@@ -199,20 +200,17 @@ contract Pawnshop{
         require(lendings[_lendingId].status == Status.Locked);
         require(block.timestamp < lendings[_lendingId].endTime, "Payment not allowed, end time reached.");
         lendings[_lendingId].status = Status.Paid;
-        // TODO: Distribute payment to lenders
-        // TODO: Give back the NFT to borrower
-        // terminateLending
+        distributePayments(_lendingId);
+        returnNFT(_lendingId);
+        lendings[_lendingId].status = Status.Terminated;
     }
     
-    function distributePayments() private {
+    function distributePayments(uint256 _lendingId) private {
         // TODO
     }
     
     // TODO
-    // Give back the nft
     // Payments to partipant lenders
     // Fees business model
-    // Evaluate chunk vs share
-    
     
 }
