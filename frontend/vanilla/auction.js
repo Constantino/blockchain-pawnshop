@@ -29,7 +29,6 @@ async function logOut() {
   }
 
   async function balance(){
-// get polygon NFTs for address
     const options = { chain: 'rinkeby', address: '0x38c335725fb4dd53a1581bbaeb1a2389adffed87' };
     let userNFTs = await Moralis.Web3API.account.getNFTs(options);
     console.log(userNFTs)
