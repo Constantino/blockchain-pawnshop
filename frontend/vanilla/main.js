@@ -3,7 +3,9 @@
 const serverUrl = "https://eplrzhxmsawi.usemoralis.com:2053/server";
 const appId = "pUNHFsDneuqyIWs6wGA3z0eM8GgtOU0VzryS9gBk";
 Moralis.start({ serverUrl, appId });
-
+var tokenId=0;
+var tokenAddress="";
+var contractType="";
 var information = []
 
 /* TODO: Add Moralis Authentication code */
@@ -44,7 +46,6 @@ async function balance(){
     var URLx="";
     let ele = document.getElementById('iterative');
     information = results;
-
     
 
     for (const index in information) {
@@ -61,17 +62,17 @@ async function balance(){
               data= result.image_url;
               console.log(data)
               if(data !=""){
-                ele.innerHTML +='<div class="col"> <div class="card shadow-sm"> <img width="100%" height="100%" alt="NFT" src=' +result.image_url +'> <div class="card-body"> <p class="card-text">' + information[index].attributes.token_id +'</p><p class="card-text">' + information[index].attributes.name +'</p><p class="card-text">' + information[index].attributes.symbol +'</p><div class="d-flex justify-content-between align-items-center"> <div class="btn-group"><button type="button" class="btn btn-sm btn-outline-secondary">View</button> <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button></div><small class="text-muted">9 mins</small> </div></div></div></div>';
+                //If NFT have image
+                ele.innerHTML +='<div class="col"> <div class="card shadow-sm"> <img width="100%" height="100%" alt="NFT" src=" +result.image_url +"/> <div class="card-body"> <p class="card-text">' + information[index].attributes.token_id +'</p><p class="card-text">' + information[index].attributes.name +'</p><p class="card-text">' + information[index].attributes.symbol +'</p><div class="d-flex justify-content-between align-items-center"> <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="pawn(\'' +information[index].attributes.token_address  + '\',\''+ information[index].attributes.contract_type +"\'," +information[index].attributes.token_id+' )">Enable</button> </div></div></div></div>';
               }
               else
               {
-                ele.innerHTML +='<div class="col"><div class="card shadow-sm"> <canvas width="100%" height="100%" style="border:1px solid;background-color:#007ad5"> </canvas><div class="card-body"> <p class="card-text">' + information[index].attributes.token_id +'</p><p class="card-text">' + information[index].attributes.name +'</p><p class="card-text">' + information[index].attributes.symbol +'</p><div class="d-flex justify-content-between align-items-center"> <div class="btn-group"> <button type="button" class="btn btn-sm btn-outline-secondary">View</button> <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button> </div><small class="text-muted">9 mins</small> </div></div></div></div>';
+                ele.innerHTML +='<div class="col"> <div class="card shadow-sm"> <canvas width="100%" height="100%" style="border: 1px solid; background-color: #007ad5;"> </canvas> <div class="card-body"> <p class="card-text">' + information[index].attributes.token_id +'</p><p class="card-text">' + information[index].attributes.name +'</p><p class="card-text">' + information[index].attributes.symbol +'</p><div class="d-flex justify-content-between align-items-center"> <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="pawn(\'' +information[index].attributes.token_address  + '\',\''+ information[index].attributes.contract_type +"\'," +information[index].attributes.token_id+' )">Enable</button> </div></div></div></div>';
               }
       });
       }
       }
      
-   
       
     
   }
@@ -88,19 +89,12 @@ async function getMetadata(url)
   }
 
 async function transfer(){
-  balance()
-  const type = information[0].attributes.contract_type
-  const lowType =  type.toLowerCase()
-  const receiver = "0xce104060ecdabFe6139B248bA20c54e03C5bE376"
-  const contractAdress = information[0].attributes.token_address
-  const tokenId = information[0].attributes.token_id
-
-  //console.log(type, receiver, contractAdress, tokenId)
-
-  const options = {type: lowType,  
+  const receiver = "0xce104060ecdabFe6139B248bA20c54e03C5bE376"   //Hardcoded - Nuestro contrato
+  const options = {type: contractType.toLowerCase(),  
   receiver: receiver,
-  contractAddress: contractAdress,
-  tokenId: tokenId}
+  contractAddress: tokenAddress,
+  tokenId: tokenId
+  }
   let result = await Moralis.transfer(options)
   }
 
@@ -140,14 +134,60 @@ async function interaction(){
     abi: ABI,
     params:{
       token_address: "0xEE995dc1D7793a1674c8D97d0111816C8bcfB12E"
+      //attribute1
+      //attribute2
     },
   }
   const addCount =  await Moralis.executeFunction(options)
 }
 
+function onlyNumberKey(evt) {        
+  // Only ASCII character in that range allowed
+  var ASCIICode = (evt.which) ? evt.which : evt.keyCode
+  if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57))
+      return false;
+  return true;
+}
 
+async function save() {
+  const amount = document.getElementById('amount').value;
+  const dateMoney = document.getElementById('datemoney').value;
+  const datePayDebt = document.getElementById('datepaydebt').value;
+  var moneyDay = getNumberOfDays(Date.now(), dateMoney);
+  var moneyDay= moneyDay + 1;
+  
+  var debtDay = getNumberOfDays(Date.now(), datePayDebt);
+  var debtDay= debtDay + 1;
+  transfer(amount);
+}
+
+async function pawn(_tokenAddress,_contractType,_tokenId) {
+  tokenAddress= _tokenAddress;
+  contractType=_contractType;
+  tokenId=_tokenId;
+}
+
+
+
+function getNumberOfDays(start, end) {
+  const date1 = new Date(start);
+  const date2 = new Date(end);
+
+  // One day in milliseconds
+  const oneDay = 1000 * 60 * 60 * 24;
+
+  // Calculating the time difference between two dates
+  const diffInTime = date2.getTime() - date1.getTime();
+
+  // Calculating the no. of days between two dates
+  const diffInDays = Math.round(diffInTime / oneDay);
+  return diffInDays;
+}
+
+  document.getElementById("btn-save").onclick = save;
   document.getElementById("btn-login").onclick = login;
   document.getElementById("btn-logout").onclick = logOut;
   document.getElementById("btn-balance").onclick = balance;
-  document.getElementById("btn-transfer").onclick = transfer;
-  document.getElementById("btn-interaction").onclick = interaction;
+
+
+ 
