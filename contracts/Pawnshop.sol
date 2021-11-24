@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT 
 pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "./NFTHandler.sol";
 
-contract Pawnshop{
+contract Pawnshop is NFTHandler{
     
     uint256 dailyInterestRate;
     address owner;
@@ -14,22 +15,17 @@ contract Pawnshop{
         owner = msg.sender;
     }
     
-    enum Status { Review, Open, Locked, Paid, Terminated }
-    enum ParticipantType { Borrower, Lender }
+    enum Status { Review, Open, ReadyToLend, Locked, Paid, Terminated }
     
     uint256 counter;
     
-    mapping(address => Participation[]) participants;
-    
-    struct Participation {
-        uint256 lendingId;
+    struct Participant {
+        address payable account;
         uint256 amount;
-        ParticipantType participantType;
     }
     
     struct Lending {
-        uint256 id;
-        address borrower;
+        address payable borrower;
         uint256 amount;
         uint256 chunkPrice;
         uint256 debt;
@@ -44,8 +40,10 @@ contract Pawnshop{
         uint256 endTime;
         uint256 debtTerm;
         
-        uint256 nftId;
-        address nftContract;
+        uint256 tokenId;
+        address tokenContract;
+        
+        Participant[] participants;
         
         Status status;
     }
@@ -62,7 +60,7 @@ contract Pawnshop{
     }
     
     function borrow(uint256 _amount, uint256 _expirationTerm, uint256 _debtTerm, uint256 _tokenId, address _tokenContract) 
-        public returns(uint256){
+        public {
         require(_amount >= chunkSize, "Amount requested is too small."); // TODO: Review Size vs Price
         require(_amount%chunkSize == 0, "Please provide an amount in multiples of the chunk size.");
         require(_expirationTerm > 1, "Please provide an expiration term greater than 1 day.");
@@ -73,18 +71,27 @@ contract Pawnshop{
         // closingTime equals openingTime + X days
         uint256 closingTime = openingTime+86400*_expirationTerm;
         
+        uint256 chunkPrice = chunkNFT(_amount);
         uint256 id = counter;
         
-        uint256 chunkPrice = chunkNFT(_amount);
+        lendings[id].borrower = payable(msg.sender);
+        lendings[id].amount = _amount;
+        lendings[id].chunkPrice = chunkPrice;
         
-        // TODO: Receive NFT
+        lendings[id].dailyInterestRate = dailyInterestRate;
         
-        lendings.push(Lending(id, msg.sender,_amount, chunkPrice, 0.0001 ether, 0, dailyInterestRate, openingTime, reviewingTime, closingTime, 0, 0, _debtTerm, _tokenId, _tokenContract, Status.Review));
+        lendings[id].openingTime = openingTime;
+        lendings[id].reviewingTime = reviewingTime;
+        lendings[id].closingTime = closingTime;
         
-        participants[msg.sender].push(Participation(id, _amount, ParticipantType.Borrower));
+        lendings[id].debtTerm = _debtTerm;
+        
+        lendings[id].tokenId = _tokenId;
+        lendings[id].tokenContract = _tokenContract;
+        
+        lendings[id].status = Status.Review;
+        
         counter++;
-        
-        return id;
     }
     
     function getChunkSize() view public returns(uint256) {
@@ -112,11 +119,11 @@ contract Pawnshop{
         lendings[_lendingId].fund += msg.value;
         
         if(lendings[_lendingId].fund == lendings[_lendingId].amount) {
-            lockLending(_lendingId);
+            lendings[_lendingId].status = Status.ReadyToLend;
         }
         
-        participants[msg.sender].push(Participation(_lendingId, msg.value, ParticipantType.Lender));
-            
+        lendings[_lendingId].participants.push(Participant(payable(msg.sender), msg.value));
+        
     }
     
     function lockLending(uint256 _lendingId) private {
@@ -127,6 +134,7 @@ contract Pawnshop{
         lendings[_lendingId].endTime = lendings[_lendingId].startTime + 86400*lendings[_lendingId].debtTerm;
         uint256 interest = lendings[_lendingId].debtTerm*lendings[_lendingId].dailyInterestRate;
         lendings[_lendingId].debt = lendings[_lendingId].amount + interest;
+        
     }
     
     function statusUpdater() external {
@@ -138,10 +146,13 @@ contract Pawnshop{
             
             Status status = lendings[id].status;
             
-            if(status == Status.Review) {
+            if (status == Status.Terminated) {
+                break;
                 
-                ERC721 xContract = ERC721(lendings[id].nftContract);
-                address currentOwner = xContract.ownerOf(lendings[id].nftId);
+            } else if(status == Status.Review) {
+                
+                ERC721 xContract = ERC721(lendings[id].tokenContract);
+                address currentOwner = xContract.ownerOf(lendings[id].tokenId);
                 
                 // if user transfered the NFT to the pawnshop, then set lending status to Open to receive funding
                 if(currentOwner == address(this)){
@@ -161,11 +172,19 @@ contract Pawnshop{
                     returnFunds(id);
                     returnNFT(id);
                 }        
-            } else if(status == Status.Locked) {
+            } else if(status == Status.ReadyToLend) {
+                lendings[id].borrower.transfer(lendings[id].amount);
+                lockLending(id);
+            } 
+            else if(status == Status.Locked) {
                 // If lending is locked and user did not pay on time, then terminate lending
                 if(currentTimestamp >= lendings[id].endTime){
                     lendings[id].status = Status.Terminated;
                 }
+            } else if(status == Status.Paid) {
+                distributePayments(id);
+                returnNFT(id);
+                lendings[id].status = Status.Terminated;
             } 
         }
         
@@ -173,52 +192,37 @@ contract Pawnshop{
     }
     
     function returnFunds(uint256 _lendingId) private {
-        
+        uint256 participantsLen = lendings[_lendingId].participants.length;
+        if(participantsLen > 0) {
+            for(uint256 i; i < participantsLen; i++) {
+                lendings[_lendingId].participants[i].account.transfer(lendings[_lendingId].participants[i].amount);
+            }
+        }
     }
     
     function returnNFT(uint256 _lendingId) private {
-        
+        psTransferNFT(lendings[_lendingId].borrower, lendings[_lendingId].tokenId, lendings[_lendingId].tokenContract);
     }
     
-    function terminateLending(uint256 _lendingId) private {
-        
-        Status status = lendings[_lendingId].status;
-        
-        if (lendings[_lendingId].status == Status.Open) {
-            
-        }
-        else if(lendings[_lendingId].status == Status.Locked) {
-            // TODO: Auction of NFT
-        } else if(lendings[_lendingId].status == Status.Review) {
-            // TODO: discard lending
-        }
-        
-        lendings[_lendingId].status = Status.Terminated;
-    }
     
     function pay(uint256 _lendingId) public payable {
         
-        require(msg.value == lendings[_lendingId].debt, "Insufficient payment.");
-        require(lendings[_lendingId].status == Status.Locked);
+        require(msg.value == lendings[_lendingId].debt, "Payment must be equal to debt.");
+        require(lendings[_lendingId].status == Status.Locked, "Payment not allowed, status: locked.");
         require(block.timestamp < lendings[_lendingId].endTime, "Payment not allowed, end time reached.");
         lendings[_lendingId].status = Status.Paid;
-        // TODO: Distribute payment to lenders
-        // TODO: Give back the NFT to borrower
-        // terminateLending
     }
     
-    function distributePayments() private {
-        
+    function distributePayments(uint256 _lendingId) private {
+        require(lendings[_lendingId].status == Status.Paid, "Distribution of payments not allowed.");
+        uint256 participantsLen = lendings[_lendingId].participants.length;
+        if(participantsLen > 0) {
+            for(uint256 i; i < participantsLen; i++) {
+                uint256 proportion = lendings[_lendingId].participants[i].amount/lendings[_lendingId].amount;
+                uint256 proportionalAmount = proportion*lendings[_lendingId].debt;
+                lendings[_lendingId].participants[i].account.transfer(proportionalAmount);
+            }
+        }
     }
-    
-    // TODO
-    // Change lending status
-    // Custody of NFTs
-    // Give back the nft
-    // Payments to partipant lenders
-    // Auction of nft
-    // Fees de mtto y negocio
-    // Evaluar chunk vs share para renombrar
-    
     
 }
