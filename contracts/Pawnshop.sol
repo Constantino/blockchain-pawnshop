@@ -17,15 +17,15 @@ contract Pawnshop is NFTHandler{
     
     enum Status { Review, Open, ReadyToLend, Locked, Paid, Terminated }
     
-    uint256 counter;
-    
     struct Participant {
-        address payable account;
+        address account;
         uint256 amount;
     }
     
+    mapping(uint256 => Participant[]) participants;
+
     struct Lending {
-        address payable borrower;
+        address borrower;
         uint256 amount;
         uint256 chunkPrice;
         uint256 debt;
@@ -43,8 +43,6 @@ contract Pawnshop is NFTHandler{
         uint256 tokenId;
         address tokenContract;
         
-        Participant[] participants;
-        
         Status status;
     }
     
@@ -59,39 +57,42 @@ contract Pawnshop is NFTHandler{
         chunkSize = _chunkSize;
     }
     
-    function borrow(uint256 _amount, uint256 _expirationTerm, uint256 _debtTerm, uint256 _tokenId, address _tokenContract) 
-        public {
-        require(_amount >= chunkSize, "Amount requested is too small."); // TODO: Review Size vs Price
+    function borrow(uint256 _amount, uint256 _expirationTerm, uint256 _debtTerm, uint256 _tokenId, address _tokenContract) public {
+        require(_amount >= chunkSize, "Amount requested is too small.");
         require(_amount%chunkSize == 0, "Please provide an amount in multiples of the chunk size.");
         require(_expirationTerm > 1, "Please provide an expiration term greater than 1 day.");
         require(_debtTerm > 1, "Please provide a debt term greater than 1 day.");
         
         uint256 openingTime = block.timestamp;
-        uint256 reviewingTime = block.timestamp+86400; // now + 1 day
+        //uint256 reviewingTime = block.timestamp+86400; // now + 1 day
+        //TODO: MAKING IT 1 MIN JUST FOR TESTNG
+        uint256 reviewingTime = block.timestamp+60; // now + 1 day
         // closingTime equals openingTime + X days
-        uint256 closingTime = openingTime+86400*_expirationTerm;
-        
+        //uint256 closingTime = openingTime+86400*_expirationTerm;
+        // TODO: MAKING IT 1.5 MIN JUST FOR TESTING
+        uint256 closingTime = openingTime+60*_expirationTerm;
+
         uint256 chunkPrice = chunkNFT(_amount);
-        uint256 id = counter;
         
-        lendings[id].borrower = payable(msg.sender);
-        lendings[id].amount = _amount;
-        lendings[id].chunkPrice = chunkPrice;
-        
-        lendings[id].dailyInterestRate = dailyInterestRate;
-        
-        lendings[id].openingTime = openingTime;
-        lendings[id].reviewingTime = reviewingTime;
-        lendings[id].closingTime = closingTime;
-        
-        lendings[id].debtTerm = _debtTerm;
-        
-        lendings[id].tokenId = _tokenId;
-        lendings[id].tokenContract = _tokenContract;
-        
-        lendings[id].status = Status.Review;
-        
-        counter++;
+        lendings.push(
+            Lending(
+            msg.sender,
+            _amount,
+            chunkPrice,
+            0,
+            0,
+            dailyInterestRate,
+            openingTime,
+            reviewingTime,
+            closingTime,
+            0,
+            0,
+            _debtTerm,
+            _tokenId,
+            _tokenContract,
+            Status.Review
+            )
+        );
     }
     
     function getChunkSize() view public returns(uint256) {
@@ -109,6 +110,9 @@ contract Pawnshop is NFTHandler{
         return lendings;
     }
 
+    function getParticipants(uint256 _lendingId) public view returns (Participant[] memory) {
+        return participants[_lendingId];
+    }
     
     function lend(uint256 _lendingId) public payable {
         require(lendings[_lendingId].status == Status.Open, "Lending opportunity is not open.");
@@ -122,8 +126,7 @@ contract Pawnshop is NFTHandler{
             lendings[_lendingId].status = Status.ReadyToLend;
         }
         
-        lendings[_lendingId].participants.push(Participant(payable(msg.sender), msg.value));
-        
+        participants[_lendingId].push( Participant(msg.sender, msg.value));
     }
     
     function lockLending(uint256 _lendingId) private {
@@ -137,7 +140,7 @@ contract Pawnshop is NFTHandler{
         
     }
     
-    function statusUpdater() external {
+    function statusUpdater() public { // TODO: to change to external
         
         uint256 currentTimestamp = block.timestamp;
         uint256 lendingsLength = lendings.length;
@@ -147,7 +150,7 @@ contract Pawnshop is NFTHandler{
             Status status = lendings[id].status;
             
             if (status == Status.Terminated) {
-                break;
+                continue;
                 
             } else if(status == Status.Review) {
                 
@@ -173,7 +176,7 @@ contract Pawnshop is NFTHandler{
                     returnNFT(id);
                 }        
             } else if(status == Status.ReadyToLend) {
-                lendings[id].borrower.transfer(lendings[id].amount);
+                payable(lendings[id].borrower).transfer(lendings[id].amount);
                 lockLending(id);
             } 
             else if(status == Status.Locked) {
@@ -192,10 +195,12 @@ contract Pawnshop is NFTHandler{
     }
     
     function returnFunds(uint256 _lendingId) private {
-        uint256 participantsLen = lendings[_lendingId].participants.length;
+        uint256 participantsLen = participants[_lendingId].length;
+        Participant[] memory lendParticipants = participants[_lendingId];
+
         if(participantsLen > 0) {
             for(uint256 i; i < participantsLen; i++) {
-                lendings[_lendingId].participants[i].account.transfer(lendings[_lendingId].participants[i].amount);
+                payable(lendParticipants[i].account).transfer(lendParticipants[i].amount);
             }
         }
     }
@@ -206,7 +211,6 @@ contract Pawnshop is NFTHandler{
     
     
     function pay(uint256 _lendingId) public payable {
-        
         require(msg.value == lendings[_lendingId].debt, "Payment must be equal to debt.");
         require(lendings[_lendingId].status == Status.Locked, "Payment not allowed, status: locked.");
         require(block.timestamp < lendings[_lendingId].endTime, "Payment not allowed, end time reached.");
@@ -215,12 +219,14 @@ contract Pawnshop is NFTHandler{
     
     function distributePayments(uint256 _lendingId) private {
         require(lendings[_lendingId].status == Status.Paid, "Distribution of payments not allowed.");
-        uint256 participantsLen = lendings[_lendingId].participants.length;
+
+        uint256 participantsLen = participants[_lendingId].length;
+
         if(participantsLen > 0) {
             for(uint256 i; i < participantsLen; i++) {
-                uint256 proportion = lendings[_lendingId].participants[i].amount/lendings[_lendingId].amount;
+                uint256 proportion = participants[_lendingId][i].amount/lendings[_lendingId].amount;
                 uint256 proportionalAmount = proportion*lendings[_lendingId].debt;
-                lendings[_lendingId].participants[i].account.transfer(proportionalAmount);
+                payable(participants[_lendingId][i].account).transfer(proportionalAmount);
             }
         }
     }
