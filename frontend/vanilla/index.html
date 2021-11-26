@@ -4,12 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
-    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
     <script src="https://unpkg.com/moralis/dist/moralis.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
     <link rel="stylesheet" href="../content/bootstrap/css/bootstrap.min.css" />
     <script src="../content/jquery/jquery-3.6.0.min.js"></script>
     <script src="../content/bootstrap/scripts/bootstrap.min.js"></script>
-
+    <script src="../content/web3/bignumber.min.js"></script>
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
     <title>PawnShop</title>
 
     <style>
@@ -69,8 +70,6 @@
         <button id="btn-login"   class="btn btn-warning">Connect Wallet</button>
         <button id="btn-logout" class="btn btn-danger">Logout</button>
         <button id="btn-balance"  class="btn btn-success">Balance</button>
-        <button id="btn-transfer" class="btn btn-info">Transfer</button>
-        <button id="btn-interaction" class="btn btn-info">Create contract</button>  
         <p id="demo"></p>
       </div>
     </div>
@@ -98,7 +97,7 @@
       </div>
       <div class="modal-body">
           <div class="form-group">
-            <label for="amount">Amount:</label>
+            <label for="amount">Amount (USD):</label>
             <input type="number" class="form-control" id="amount" onkeypress="return onlyNumberKey(event)" class="numbersOnly">
           </div>
           </br>
@@ -114,23 +113,48 @@
              class="form-control" id="datepaydebt" >
           </div>
           <br>
-          <div class="form-group">
-            <button type="button" class="btn btn-primary" id="btn-save"  data-bs-dismiss="modal">Transfer NFT</button>
+          <div>
+            <button type="button" id="btn-transfer" class="btn btn-info">Transfer NFT</button>  
+           
           </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" id="btn-save"  data-bs-dismiss="modal">Pawn</button>
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+        <button type="button" id="btn-pawnConfirm" class="btn btn-primary" data-bs-toggle="modal" href="#myModal2">Save changes</button>
       </div>
     </div>
   </div>
 </div>
 </form>
+<!--Second Modal-->
+<div class="modal" id="myModal2" data-bs-backdrop="static">
+	<div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Pawn Confirm</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+        </div><div class="container"></div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label id="curencyAmount"><strong>Amount (USD):</strong></label>
+            <br>
+            <label id="amountETH"><strong>Amount (ETH):</strong></label>
+            <br>
+            <label id="chainlinkETHUSD"><strong>ETH/USD:</strong></label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <a href="#" data-bs-dismiss="modal" class="btn btn-danger">Close</a>
+          <button type="button" id="btn-pawnx" class="btn btn-primary">Pawn</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+
+
+
 <footer class="text-muted py-5">
-  <div class="container">
-    <p class="float-end mb-1">
-    </p>
-  </div>
 </footer>
 <script type="text/javascript" src="./main.js"></script>
 </body>

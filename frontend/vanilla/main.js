@@ -2,10 +2,16 @@
 /* Moralis init code */
 const serverUrl = "https://eplrzhxmsawi.usemoralis.com:2053/server";
 const appId = "pUNHFsDneuqyIWs6wGA3z0eM8GgtOU0VzryS9gBk";
+const _contractAddress="0xa98486Fd37b1292cd595389703fC3B1Af1F8E1c6";
 Moralis.start({ serverUrl, appId });
 var tokenId=0;
 var tokenAddress="";
 var contractType="";
+//<------------------->
+var amount=0;
+var moneyDay=0;
+var debtDay=0;
+//<------------------->
 var information = []
 
 /* TODO: Add Moralis Authentication code */
@@ -42,7 +48,6 @@ async function balance(){
 
 // run the query
   const results = await query.find();
-  //console.log(results)
     var URLx="";
     let ele = document.getElementById('iterative');
     information = results;
@@ -59,15 +64,16 @@ async function balance(){
       var data="";
       metadata.then(function(result) {
         // here you can use the result of promise
-              data= result.image_url;
-              console.log(data)
-              if(data !=""){
+              console.log(result);
+              data= result.token_metadata;
+              if(data !=null){
                 //If NFT have image
-                ele.innerHTML +='<div class="col"> <div class="card shadow-sm"> <img width="100%" height="100%" alt="NFT" src=" +result.image_url +"/> <div class="card-body"> <p class="card-text">' + information[index].attributes.token_id +'</p><p class="card-text">' + information[index].attributes.name +'</p><p class="card-text">' + information[index].attributes.symbol +'</p><div class="d-flex justify-content-between align-items-center"> <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="pawn(\'' +information[index].attributes.token_address  + '\',\''+ information[index].attributes.contract_type +"\'," +information[index].attributes.token_id+' )">Enable</button> </div></div></div></div>';
+                ele.innerHTML +='<div class="col"> <div class="card shadow-sm"> <img width="100%" height="100%" alt="NFT" src=" '+ result.token_metadata +'"/> <div class="card-body"> <p class="card-text">' + information[index].attributes.token_id +'</p><p class="card-text">' + information[index].attributes.name +'</p><p class="card-text">' + information[index].attributes.symbol +'</p><div class="d-flex justify-content-between align-items-center"> <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="enable(\'' +information[index].attributes.token_address  + '\',\''+ information[index].attributes.contract_type +"\'," +information[index].attributes.token_id+' )">Enable</button> </div></div></div></div>';
+                //To-Do Decode JSON to obtaing image
               }
               else
               {
-                ele.innerHTML +='<div class="col"> <div class="card shadow-sm"> <canvas width="100%" height="100%" style="border: 1px solid; background-color: #007ad5;"> </canvas> <div class="card-body"> <p class="card-text">' + information[index].attributes.token_id +'</p><p class="card-text">' + information[index].attributes.name +'</p><p class="card-text">' + information[index].attributes.symbol +'</p><div class="d-flex justify-content-between align-items-center"> <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="pawn(\'' +information[index].attributes.token_address  + '\',\''+ information[index].attributes.contract_type +"\'," +information[index].attributes.token_id+' )">Enable</button> </div></div></div></div>';
+                ele.innerHTML +='<div class="col"> <div class="card shadow-sm"> <canvas width="100%" height="100%" style="border: 1px solid; background-color: #007ad5;"> </canvas> <div class="card-body"> <p class="card-text">' + information[index].attributes.token_id +'</p><p class="card-text">' + information[index].attributes.name +'</p><p class="card-text">' + information[index].attributes.symbol +'</p><div class="d-flex justify-content-between align-items-center"> <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="enable(\'' +information[index].attributes.token_address  + '\',\''+ information[index].attributes.contract_type +"\'," +information[index].attributes.token_id+' )">Enable</button> </div></div></div></div>';
               }
       });
       }
@@ -89,7 +95,9 @@ async function getMetadata(url)
   }
 
 async function transfer(){
-  const receiver = "0xce104060ecdabFe6139B248bA20c54e03C5bE376"   //Hardcoded - Nuestro contrato
+  console.log("TokenId:" + tokenId);
+  console.log("TokenAddress:" + tokenAddress);
+  const receiver = _contractAddress  //Hardcoded - Nuestro contrato
   const options = {type: contractType.toLowerCase(),  
   receiver: receiver,
   contractAddress: tokenAddress,
@@ -98,70 +106,63 @@ async function transfer(){
   let result = await Moralis.transfer(options)
   }
 
-async function interaction(){
-  const ABI = [
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "token_address",
-          "type": "address"
-        }
-      ],
-      "name": "storeTokenAddress",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "viewTokenAddress",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    }
-  ]
+async function pawn(){
+  amount = document.getElementById('amount').value;
+  var dateMoney = document.getElementById('datemoney').value;
+  var datePayDebt = document.getElementById('datepaydebt').value;
+  moneyDay = getNumberOfDays(Date.now(), dateMoney);
+  moneyDay= moneyDay + 1;
+  
+  debtDay = getNumberOfDays(Date.now(), datePayDebt);
+  debtDay= debtDay + 1
+
+  let result = await usdToWei();
+  let conversion=0;
+  //ETH to Wei
+  conversion= ((amount * 10**18 )/ result) * 10**18 ;
+  console.log("Expiration term:" + moneyDay);
+  console.log("Debt term:" + debtDay);
+  console.log("TokenId:" + tokenId);
+  console.log("TokenAddress:" + tokenAddress);
+  //Cuanto quiere
+  //Cambia el ABI
+  const abi =await getMetadata('../../contracts/ABI/Pawnshop.json');
+  x = new BigNumber(conversion);
+  y= new BigNumber(moneyDay);
+  z= new BigNumber(debtDay);
+  console.log("-----");
+  console.log(conversion);
+  console.log(x);
+  console.log(y);
+  console.log(z);
+  console.log("Si entra");
 
   const options = {
-    contractAddress: "0xEE995dc1D7793a1674c8D97d0111816C8bcfB12E",
-    functionName: "storeTokenAddress",
-    abi: ABI,
+    contractAddress: _contractAddress,//"Nuestro contrato"
+    functionName: "borrow",
+    abi: abi,
     params:{
-      token_address: "0xEE995dc1D7793a1674c8D97d0111816C8bcfB12E"
-      //attribute1
-      //attribute2
+      _amount:x,
+      _expirationTerm:y,
+      _debtTerm:z,
+      _tokenId:tokenId,
+      _tokenContract:tokenAddress//"Contrato del token"
     },
   }
+  //uint256 _amount, uint256 _expirationTerm, uint256 _debtTerm, uint256 _tokenId, address _tokenContract
   const addCount =  await Moralis.executeFunction(options)
 }
 
-function onlyNumberKey(evt) {        
+async function onlyNumberKey(evt) {        
   // Only ASCII character in that range allowed
   var ASCIICode = (evt.which) ? evt.which : evt.keyCode
   if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57))
+  {
       return false;
-  return true;
+  }
 }
 
-async function save() {
-  const amount = document.getElementById('amount').value;
-  const dateMoney = document.getElementById('datemoney').value;
-  const datePayDebt = document.getElementById('datepaydebt').value;
-  var moneyDay = getNumberOfDays(Date.now(), dateMoney);
-  var moneyDay= moneyDay + 1;
-  
-  var debtDay = getNumberOfDays(Date.now(), datePayDebt);
-  var debtDay= debtDay + 1;
-  transfer(amount);
-}
-
-async function pawn(_tokenAddress,_contractType,_tokenId) {
+async function enable(_tokenAddress,_contractType,_tokenId) {
   tokenAddress= _tokenAddress;
   contractType=_contractType;
   tokenId=_tokenId;
@@ -184,10 +185,44 @@ function getNumberOfDays(start, end) {
   return diffInDays;
 }
 
-  document.getElementById("btn-save").onclick = save;
+async function usdToWei()
+{
+  const addr = "0x8A753747A1Fa494EC906cE90E9f37563A8AF630e"
+  const web3 = new Web3("https://eth-rinkeby.alchemyapi.io/v2/U-LGMY7cgdXhQ6TPuaRHI8Mr3BC1zKag")
+  //Cambia el abi
+  const abi =await getMetadata('../../contracts/ABI/ChainlinkPriceFeed.json');
+  //./main.js
+  const priceFeed = new web3.eth.Contract(abi, addr);
+  var promise;
+  promise=priceFeed.methods.latestRoundData().call()
+    .then((roundData) => {
+        return roundData.answer * 10000000000;
+        
+    })
+  return promise;
+}
+
+async function pawnConfirm()
+{
+  var amount = document.getElementById('amount').value;
+  let result = await usdToWei();
+  let conversion=0;
+  conversion= ((amount * 10**18 )/ result) ;
+  document.getElementById('amountETH').innerHTML = '<strong>Amount (ETH):</strong>' + conversion;
+  document.getElementById('curencyAmount').innerHTML = '<strong>Amount (USD):</strong>' + amount;
+  document.getElementById('chainlinkETHUSD').innerHTML = '<strong>ETH/USD:</strong>' + result/ (10**18);
+}
+
+
+  document.getElementById("btn-pawnx").onclick = pawn;
   document.getElementById("btn-login").onclick = login;
   document.getElementById("btn-logout").onclick = logOut;
   document.getElementById("btn-balance").onclick = balance;
+  document.getElementById("btn-transfer").onclick = transfer;
+  document.getElementById("btn-pawnConfirm").onclick = pawnConfirm;
+  //-------------------------------------------------------------//
+  document.getElementById("btn-enable").onclick = enable;
 
 
  
+  
