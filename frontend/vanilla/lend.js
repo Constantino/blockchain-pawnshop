@@ -351,9 +351,9 @@ async function lend(){
         contractAddress: contractAddress,
         functionName: "lend",
         abi: ABI,
-        msgValue: "200000000",
+        msgValue: "200000000000000000",
         params:{
-            _lendingId: "1",
+            _lendingId: 3,
         },
     }
     const lendMoney = await Moralis.executeFunction(options)
