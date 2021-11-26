@@ -346,12 +346,12 @@ async function getNFTsToLend(){
     console.log(NFTsToLend)
     }
 
-async function lend(){
+async function pay(){
     const options = {
         contractAddress: contractAddress,
-        functionName: "lend",
+        functionName: "pay",
         abi: ABI,
-        msgValue: "200000000000000000",
+        msgValue: "200000000000000006",
         params:{
             _lendingId: 5,
         },
@@ -362,4 +362,4 @@ async function lend(){
   document.getElementById("btn-login").onclick = login;
   document.getElementById("btn-logout").onclick = logOut;
   document.getElementById("btn-balance").onclick = getNFTsToLend;
-  document.getElementById("btn-lend").onclick = lend;
+  document.getElementById("btn-pay").onclick = pay;
