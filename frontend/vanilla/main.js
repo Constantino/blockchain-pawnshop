@@ -2,7 +2,7 @@
 /* Moralis init code */
 const serverUrl = "https://eplrzhxmsawi.usemoralis.com:2053/server";
 const appId = "pUNHFsDneuqyIWs6wGA3z0eM8GgtOU0VzryS9gBk";
-const _contractAddress="0xa98486Fd37b1292cd595389703fC3B1Af1F8E1c6";
+const _contractAddress="0xfB7B5f89a9E690135D571dFdC720cE642685ce45";
 Moralis.start({ serverUrl, appId });
 var tokenId=0;
 var tokenAddress="";
@@ -107,19 +107,20 @@ async function transfer(){
   }
 
 async function pawn(){
-  amount = document.getElementById('amount').value;
+  document.getElementById('btn-pawnxC').style.display = "none";
+  document.getElementById('btn-pawnx').style.display = "none";
+  document.getElementById('btn-waitPawn').style.display = "block";
+  //amount = document.getElementById('amount').value;
   var dateMoney = document.getElementById('datemoney').value;
   var datePayDebt = document.getElementById('datepaydebt').value;
   moneyDay = getNumberOfDays(Date.now(), dateMoney);
   moneyDay= moneyDay + 1;
   
   debtDay = getNumberOfDays(Date.now(), datePayDebt);
-  debtDay= debtDay + 1
-
-  let result = await usdToWei();
-  let conversion=0;
-  //ETH to Wei
-  conversion= ((amount * 10**18 )/ result) * 10**18 ;
+  debtDay= debtDay + 1;
+  let amountWEI = document.getElementById('amountETH').value * 10 ** 18;
+  
+  console.log("WEI:" + amountWEI);
   console.log("Expiration term:" + moneyDay);
   console.log("Debt term:" + debtDay);
   console.log("TokenId:" + tokenId);
@@ -127,30 +128,26 @@ async function pawn(){
   //Cuanto quiere
   //Cambia el ABI
   const abi =await getMetadata('../../contracts/ABI/Pawnshop.json');
-  x = new BigNumber(conversion);
-  y= new BigNumber(moneyDay);
-  z= new BigNumber(debtDay);
-  console.log("-----");
-  console.log(conversion);
-  console.log(x);
-  console.log(y);
-  console.log(z);
-  console.log("Si entra");
 
   const options = {
     contractAddress: _contractAddress,//"Nuestro contrato"
     functionName: "borrow",
     abi: abi,
     params:{
-      _amount:x,
-      _expirationTerm:y,
-      _debtTerm:z,
+      _amount:amountWEI.toString(),
+      _expirationTerm:moneyDay,
+      _debtTerm:debtDay,
       _tokenId:tokenId,
       _tokenContract:tokenAddress//"Contrato del token"
     },
   }
   //uint256 _amount, uint256 _expirationTerm, uint256 _debtTerm, uint256 _tokenId, address _tokenContract
   const addCount =  await Moralis.executeFunction(options)
+  $('#exampleModal').modal('hide');
+  $('#myModal2').modal('hide');
+  document.getElementById('btn-pawnxC').style.display = "none";
+  document.getElementById('btn-pawnx').style.display = "none";
+  document.getElementById('btn-waitPawn').style.display = "none";
 }
 
 async function onlyNumberKey(evt) {        
@@ -204,12 +201,20 @@ async function usdToWei()
 
 async function pawnConfirm()
 {
+  /*
+  USD to ETH - Not possible in this hackhaton
   var amount = document.getElementById('amount').value;
   let result = await usdToWei();
   let conversion=0;
   conversion= ((amount * 10**18 )/ result) ;
   document.getElementById('amountETH').innerHTML = '<strong>Amount (ETH):</strong>' + conversion;
   document.getElementById('curencyAmount').innerHTML = '<strong>Amount (USD):</strong>' + amount;
+  document.getElementById('chainlinkETHUSD').innerHTML = '<strong>ETH/USD:</strong>' + result/ (10**18);
+  */
+  var amountETH = document.getElementById('amountETH').value;
+  let result = await usdToWei();
+  document.getElementById('amountETHER').innerHTML = '<strong>Amount (ETH):</strong>' + amountETH;
+  document.getElementById('amountETHToUSD').innerHTML = '<strong>Amount (USD):</strong>' + amountETH * (result/ (10**18));
   document.getElementById('chainlinkETHUSD').innerHTML = '<strong>ETH/USD:</strong>' + result/ (10**18);
 }
 
