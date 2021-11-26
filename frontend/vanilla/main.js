@@ -2,6 +2,7 @@
 /* Moralis init code */
 const serverUrl = "https://eplrzhxmsawi.usemoralis.com:2053/server";
 const appId = "pUNHFsDneuqyIWs6wGA3z0eM8GgtOU0VzryS9gBk";
+const _contractAddress="0xa98486Fd37b1292cd595389703fC3B1Af1F8E1c6";
 Moralis.start({ serverUrl, appId });
 var tokenId=0;
 var tokenAddress="";
@@ -47,7 +48,6 @@ async function balance(){
 
 // run the query
   const results = await query.find();
-  //console.log(results)
     var URLx="";
     let ele = document.getElementById('iterative');
     information = results;
@@ -64,11 +64,12 @@ async function balance(){
       var data="";
       metadata.then(function(result) {
         // here you can use the result of promise
-              data= result.image_url;
-              console.log(data)
-              if(data !=""){
+              console.log(result);
+              data= result.token_metadata;
+              if(data !=null){
                 //If NFT have image
-                ele.innerHTML +='<div class="col"> <div class="card shadow-sm"> <img width="100%" height="100%" alt="NFT" src=" +result.image_url +"/> <div class="card-body"> <p class="card-text">' + information[index].attributes.token_id +'</p><p class="card-text">' + information[index].attributes.name +'</p><p class="card-text">' + information[index].attributes.symbol +'</p><div class="d-flex justify-content-between align-items-center"> <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="enable(\'' +information[index].attributes.token_address  + '\',\''+ information[index].attributes.contract_type +"\'," +information[index].attributes.token_id+' )">Enable</button> </div></div></div></div>';
+                ele.innerHTML +='<div class="col"> <div class="card shadow-sm"> <img width="100%" height="100%" alt="NFT" src=" '+ result.token_metadata +'"/> <div class="card-body"> <p class="card-text">' + information[index].attributes.token_id +'</p><p class="card-text">' + information[index].attributes.name +'</p><p class="card-text">' + information[index].attributes.symbol +'</p><div class="d-flex justify-content-between align-items-center"> <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="enable(\'' +information[index].attributes.token_address  + '\',\''+ information[index].attributes.contract_type +"\'," +information[index].attributes.token_id+' )">Enable</button> </div></div></div></div>';
+                //To-Do Decode JSON to obtaing image
               }
               else
               {
@@ -96,7 +97,7 @@ async function getMetadata(url)
 async function transfer(){
   console.log("TokenId:" + tokenId);
   console.log("TokenAddress:" + tokenAddress);
-  const receiver = "0xce104060ecdabFe6139B248bA20c54e03C5bE376"   //Hardcoded - Nuestro contrato
+  const receiver = _contractAddress  //Hardcoded - Nuestro contrato
   const options = {type: contractType.toLowerCase(),  
   receiver: receiver,
   contractAddress: tokenAddress,
@@ -114,332 +115,41 @@ async function pawn(){
   
   debtDay = getNumberOfDays(Date.now(), datePayDebt);
   debtDay= debtDay + 1
-  debtDay = getNumberOfDays(Date.now(), datePayDebt);
-  debtDay= debtDay + 1
 
   let result = await usdToWei();
   let conversion=0;
   //ETH to Wei
   conversion= ((amount * 10**18 )/ result) * 10**18 ;
-  
-  
-  console.log("Amount in Wei:" + conversion);
   console.log("Expiration term:" + moneyDay);
   console.log("Debt term:" + debtDay);
   console.log("TokenId:" + tokenId);
   console.log("TokenAddress:" + tokenAddress);
-  var usdWei= await usdToWei(amount);
   //Cuanto quiere
   //Cambia el ABI
-  const ABI = [
-    [
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "_rate",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "_chunkSize",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "nonpayable",
-        "type": "constructor"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": false,
-            "internalType": "address",
-            "name": "from",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "tokenId",
-            "type": "uint256"
-          },
-          {
-            "indexed": false,
-            "internalType": "address",
-            "name": "operator",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "bytes",
-            "name": "data",
-            "type": "bytes"
-          }
-        ],
-        "name": "NFTRecieved",
-        "type": "event"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "_amount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "_expirationTerm",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "_debtTerm",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "_tokenId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "_tokenContract",
-            "type": "address"
-          }
-        ],
-        "name": "borrow",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "getChunkSize",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "getLendings",
-        "outputs": [
-          {
-            "components": [
-              {
-                "internalType": "address payable",
-                "name": "borrower",
-                "type": "address"
-              },
-              {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "chunkPrice",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "debt",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "fund",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "dailyInterestRate",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "openingTime",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "reviewingTime",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "closingTime",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "startTime",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "endTime",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "debtTerm",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "tokenId",
-                "type": "uint256"
-              },
-              {
-                "internalType": "address",
-                "name": "tokenContract",
-                "type": "address"
-              },
-              {
-                "components": [
-                  {
-                    "internalType": "address payable",
-                    "name": "account",
-                    "type": "address"
-                  },
-                  {
-                    "internalType": "uint256",
-                    "name": "amount",
-                    "type": "uint256"
-                  }
-                ],
-                "internalType": "struct Pawnshop.Participant[]",
-                "name": "participants",
-                "type": "tuple[]"
-              },
-              {
-                "internalType": "enum Pawnshop.Status",
-                "name": "status",
-                "type": "uint8"
-              }
-            ],
-            "internalType": "struct Pawnshop.Lending[]",
-            "name": "",
-            "type": "tuple[]"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "_lendingId",
-            "type": "uint256"
-          }
-        ],
-        "name": "lend",
-        "outputs": [],
-        "stateMutability": "payable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "_operator",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "_from",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "_tokenId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bytes",
-            "name": "_data",
-            "type": "bytes"
-          }
-        ],
-        "name": "onERC721Received",
-        "outputs": [
-          {
-            "internalType": "bytes4",
-            "name": "",
-            "type": "bytes4"
-          }
-        ],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "_lendingId",
-            "type": "uint256"
-          }
-        ],
-        "name": "pay",
-        "outputs": [],
-        "stateMutability": "payable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "_chunkSize",
-            "type": "uint256"
-          }
-        ],
-        "name": "setChunkSize",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "_rate",
-            "type": "uint256"
-          }
-        ],
-        "name": "setDailyInterestRate",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "statusUpdater",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }
-    ]
-  ]
+  const abi =await getMetadata('../../contracts/ABI/Pawnshop.json');
+  x = new BigNumber(conversion);
+  y= new BigNumber(moneyDay);
+  z= new BigNumber(debtDay);
+  console.log("-----");
+  console.log(conversion);
+  console.log(x);
+  console.log(y);
+  console.log(z);
+  console.log("Si entra");
+
   const options = {
-    contractAddress: "0xce104060ecdabFe6139B248bA20c54e03C5bE376",//"Nuestro contrato"
+    contractAddress: _contractAddress,//"Nuestro contrato"
     functionName: "borrow",
-    abi: ABI,
+    abi: abi,
     params:{
-      _amount:conversion,
-      _expirationTerm:dateMoney,
-      _debtTerm:debtDay,
+      _amount:x,
+      _expirationTerm:y,
+      _debtTerm:z,
       _tokenId:tokenId,
       _tokenContract:tokenAddress//"Contrato del token"
     },
   }
+  //uint256 _amount, uint256 _expirationTerm, uint256 _debtTerm, uint256 _tokenId, address _tokenContract
   const addCount =  await Moralis.executeFunction(options)
 }
 
@@ -480,7 +190,8 @@ async function usdToWei()
   const addr = "0x8A753747A1Fa494EC906cE90E9f37563A8AF630e"
   const web3 = new Web3("https://eth-rinkeby.alchemyapi.io/v2/U-LGMY7cgdXhQ6TPuaRHI8Mr3BC1zKag")
   //Cambia el abi
-  const abi = [{ "inputs": [], "name": "decimals", "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "description", "outputs": [{ "internalType": "string", "name": "", "type": "string" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint80", "name": "_roundId", "type": "uint80" }], "name": "getRoundData", "outputs": [{ "internalType": "uint80", "name": "roundId", "type": "uint80" }, { "internalType": "int256", "name": "answer", "type": "int256" }, { "internalType": "uint256", "name": "startedAt", "type": "uint256" }, { "internalType": "uint256", "name": "updatedAt", "type": "uint256" }, { "internalType": "uint80", "name": "answeredInRound", "type": "uint80" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "latestRoundData", "outputs": [{ "internalType": "uint80", "name": "roundId", "type": "uint80" }, { "internalType": "int256", "name": "answer", "type": "int256" }, { "internalType": "uint256", "name": "startedAt", "type": "uint256" }, { "internalType": "uint256", "name": "updatedAt", "type": "uint256" }, { "internalType": "uint80", "name": "answeredInRound", "type": "uint80" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "version", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }];  
+  const abi =await getMetadata('../../contracts/ABI/ChainlinkPriceFeed.json');
+  //./main.js
   const priceFeed = new web3.eth.Contract(abi, addr);
   var promise;
   promise=priceFeed.methods.latestRoundData().call()
@@ -502,15 +213,7 @@ async function pawnConfirm()
   document.getElementById('chainlinkETHUSD').innerHTML = '<strong>ETH/USD:</strong>' + result/ (10**18);
 }
 
-async function readJSON(jsonURL)
-{
-  fetch()
-                .then(res => res.json())
-                .then(data => {
-                  return data;
-                })
-                .catch(err => console.error(err));
-}
+
   document.getElementById("btn-pawnx").onclick = pawn;
   document.getElementById("btn-login").onclick = login;
   document.getElementById("btn-logout").onclick = logOut;
