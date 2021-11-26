@@ -79,14 +79,19 @@ async function getNFTsToLend(){
         {
             "inputs": [
                 {
-                    "internalType": "address",
-                    "name": "_operator",
-                    "type": "address"
+                    "internalType": "uint256",
+                    "name": "_amount",
+                    "type": "uint256"
                 },
                 {
-                    "internalType": "address",
-                    "name": "_from",
-                    "type": "address"
+                    "internalType": "uint256",
+                    "name": "_expirationTerm",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "_debtTerm",
+                    "type": "uint256"
                 },
                 {
                     "internalType": "uint256",
@@ -94,44 +99,12 @@ async function getNFTsToLend(){
                     "type": "uint256"
                 },
                 {
-                    "internalType": "bytes",
-                    "name": "_data",
-                    "type": "bytes"
+                    "internalType": "address",
+                    "name": "_tokenContract",
+                    "type": "address"
                 }
             ],
-            "name": "onERC721Received",
-            "outputs": [
-                {
-                    "internalType": "bytes4",
-                    "name": "",
-                    "type": "bytes4"
-                }
-            ],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "_chunkSize",
-                    "type": "uint256"
-                }
-            ],
-            "name": "setChunkSize",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "_rate",
-                    "type": "uint256"
-                }
-            ],
-            "name": "setDailyInterestRate",
+            "name": "borrow",
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
@@ -187,6 +160,31 @@ async function getNFTsToLend(){
                         },
                         {
                             "internalType": "uint256",
+                            "name": "openingTime",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "reviewingTime",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "closingTime",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "startTime",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "endTime",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
                             "name": "debtTerm",
                             "type": "uint256"
                         },
@@ -199,20 +197,149 @@ async function getNFTsToLend(){
                             "internalType": "address",
                             "name": "tokenContract",
                             "type": "address"
+                        },
+                        {
+                            "internalType": "enum Pawnshop.Status",
+                            "name": "status",
+                            "type": "uint8"
                         }
                     ],
-                    "internalType": "struct Pawnshop.Lending",
+                    "internalType": "struct Pawnshop.Lending[]",
                     "name": "",
-                    "type": "tuple"
+                    "type": "tuple[]"
                 }
             ],
             "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "_lendingId",
+                    "type": "uint256"
+                }
+            ],
+            "name": "getParticipants",
+            "outputs": [
+                {
+                    "components": [
+                        {
+                            "internalType": "address",
+                            "name": "account",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "amount",
+                            "type": "uint256"
+                        }
+                    ],
+                    "internalType": "struct Pawnshop.Participant[]",
+                    "name": "",
+                    "type": "tuple[]"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "_lendingId",
+                    "type": "uint256"
+                }
+            ],
+            "name": "lend",
+            "outputs": [],
+            "stateMutability": "payable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "_operator",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "_from",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "_tokenId",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "bytes",
+                    "name": "_data",
+                    "type": "bytes"
+                }
+            ],
+            "name": "onERC721Received",
+            "outputs": [
+                {
+                    "internalType": "bytes4",
+                    "name": "",
+                    "type": "bytes4"
+                }
+            ],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "_lendingId",
+                    "type": "uint256"
+                }
+            ],
+            "name": "pay",
+            "outputs": [],
+            "stateMutability": "payable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "_chunkSize",
+                    "type": "uint256"
+                }
+            ],
+            "name": "setChunkSize",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "_rate",
+                    "type": "uint256"
+                }
+            ],
+            "name": "setDailyInterestRate",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "statusUpdater",
+            "outputs": [],
+            "stateMutability": "nonpayable",
             "type": "function"
         }
     ]
     
     const options = {
-        contractAddress: "0x80fF6Fe8C0C3AF4b8Ee7451009625Fd2a9a92Aab",
+        contractAddress: "0x51b744B9274D65aD5386A820F4D5585b92610c27",
         functionName: "getLendings",
         abi: ABI,
         params:{},
