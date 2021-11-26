@@ -96,9 +96,16 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+        <!--
           <div class="form-group">
-            <label for="amount">Amount (USD):</label>
-            <input type="number" class="form-control" id="amount" onkeypress="return onlyNumberKey(event)" class="numbersOnly">
+            <label for="amount" visible="False">Amount (USD):</label>
+            <input type="number" visible="False" class="form-control" id="amount" onkeypress="return onlyNumberKey(event)" class="numbersOnly">
+          </div>
+          </br>
+        -->
+          <div class="form-group">
+            <label for="amount" >Amount (ETH):</label>
+            <input type="number"  class="form-control" id="amountETH" onkeypress="return onlyNumberKey(event)" class="numbersOnly">
           </div>
           </br>
           <div class="form-group">
@@ -136,16 +143,22 @@
         </div><div class="container"></div>
         <div class="modal-body">
           <div class="form-group">
-            <label id="curencyAmount"><strong>Amount (USD):</strong></label>
+            <!--<label id="curencyAmount"><strong>Amount (USD):</strong></label>-->
+            <label id="amountETHToUSD"><strong>Amount (USD):</strong></label>
             <br>
-            <label id="amountETH"><strong>Amount (ETH):</strong></label>
+            <label id="amountETHER"><strong>Amount (ETH):</strong></label>
             <br>
             <label id="chainlinkETHUSD"><strong>ETH/USD:</strong></label>
           </div>
         </div>
         <div class="modal-footer">
-          <a href="#" data-bs-dismiss="modal" class="btn btn-danger">Close</a>
+          <button class="btn btn-primary" type="button" id="btn-waitPawn" disabled style="display:none;">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            <span class="sr-only">Loading...</span>
+          </button>
+          <a href="#" data-bs-dismiss="modal" class="btn btn-danger" id="btn-pawnxC">Close</a>
           <button type="button" id="btn-pawnx" class="btn btn-primary">Pawn</button>
+          
         </div>
       </div>
     </div>
