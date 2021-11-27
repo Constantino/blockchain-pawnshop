@@ -8,6 +8,7 @@ contract Pawnshop is NFTHandler{
     uint256 dailyInterestRate;
     address owner;
     uint256 chunkSize;
+    uint256 counter;
     
     constructor(uint256 _rate, uint256 _chunkSize){
         dailyInterestRate = _rate;
@@ -25,6 +26,7 @@ contract Pawnshop is NFTHandler{
     mapping(uint256 => Participant[]) participants;
 
     struct Lending {
+        uint256 id;
         address borrower;
         uint256 amount;
         uint256 chunkPrice;
@@ -80,6 +82,7 @@ contract Pawnshop is NFTHandler{
         
         lendings.push(
             Lending(
+            counter++,
             msg.sender,
             _amount,
             chunkPrice,
@@ -112,6 +115,10 @@ contract Pawnshop is NFTHandler{
     
     function getLendings() public view returns (Lending[] memory) {
         return lendings;
+    }
+
+    function getLending(uint256 _lendingId) public view returns (Lending memory) {
+        return lendings[_lendingId];
     }
 
     function getParticipants(uint256 _lendingId) public view returns (Participant[] memory) {
@@ -224,8 +231,8 @@ contract Pawnshop is NFTHandler{
         lendings[_lendingId].status = Status.Paid;
     }
 
-    //////ADDING FUNCTION TO BUY THE NFT 
-    function Buy(uint256 _lendingId)public payable{
+    // ADDING FUNCTION TO BUY THE NFT 
+    function buy(uint256 _lendingId)public payable{
         require(msg.value == lendings[_lendingId].debt, "Check the price for this");
         require(lendings[_lendingId].status == Status.ForSale, "Payment not allowed, this NFT is not for sale yet");
         require(block.timestamp > lendings[_lendingId].endTime, "Payment not allowed, this NFT is not for sale yet");
