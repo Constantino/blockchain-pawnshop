@@ -64,11 +64,10 @@ async function balance(){
       var data="";
       metadata.then(function(result) {
         // here you can use the result of promise
-              console.log(result);
-              data= result.token_metadata;
+              data= result.asset_contract.image_url;
               if(data !=null){
                 //If NFT have image
-                ele.innerHTML +='<div class="col"> <div class="card shadow-sm"> <img width="100%" height="100%" alt="NFT" src=" '+ result.token_metadata +'"/> <div class="card-body"> <p class="card-text">' + information[index].attributes.token_id +'</p><p class="card-text">' + information[index].attributes.name +'</p><p class="card-text">' + information[index].attributes.symbol +'</p><div class="d-flex justify-content-between align-items-center"> <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="enable(\'' +information[index].attributes.token_address  + '\',\''+ information[index].attributes.contract_type +"\'," +information[index].attributes.token_id+' )">Enable</button> </div></div></div></div>';
+                ele.innerHTML +='<div class="col"> <div class="card shadow-sm"> <img width="100%" height="100%" alt="NFT" src=" '+ result.asset_contract.image_url +'"/> <div class="card-body"> <p class="card-text">' + information[index].attributes.token_id +'</p><p class="card-text">' + information[index].attributes.name +'</p><p class="card-text">' + information[index].attributes.symbol +'</p><div class="d-flex justify-content-between align-items-center"> <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="enable(\'' +information[index].attributes.token_address  + '\',\''+ information[index].attributes.contract_type +"\'," +information[index].attributes.token_id+' )">Enable</button> </div></div></div></div>';
                 //To-Do Decode JSON to obtaing image
               }
               else
@@ -222,12 +221,11 @@ async function pawnConfirm()
   document.getElementById("btn-pawnx").onclick = pawn;
   document.getElementById("btn-login").onclick = login;
   document.getElementById("btn-logout").onclick = logOut;
-  document.getElementById("btn-balance").onclick = balance;
   document.getElementById("btn-transfer").onclick = transfer;
   document.getElementById("btn-pawnConfirm").onclick = pawnConfirm;
+  document.getElementById("btn-balance").onclick= balance;
   //-------------------------------------------------------------//
   document.getElementById("btn-enable").onclick = enable;
-
 
  
   

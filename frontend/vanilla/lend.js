@@ -2,317 +2,17 @@
 /* Moralis init code */
 const serverUrl = "https://xnqjh1qklvb8.usemoralis.com:2053/server";
 const appId = "tsFobG1D7u1kGPHSIm3bOvDO43RQ76OJwCoEI6LT";
+const _contractAddress="0xa8a2abd290db1d4b7A6F5E00CA9F3d118861dDBd";
 Moralis.start({ serverUrl, appId });
-const ABI = [
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "_rate",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_chunkSize",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "nonpayable",
-        "type": "constructor"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": false,
-                "internalType": "address",
-                "name": "from",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "tokenId",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "address",
-                "name": "operator",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "bytes",
-                "name": "data",
-                "type": "bytes"
-            }
-        ],
-        "name": "NFTRecieved",
-        "type": "event"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "_amount",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_expirationTerm",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_debtTerm",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_tokenId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "address",
-                "name": "_tokenContract",
-                "type": "address"
-            }
-        ],
-        "name": "borrow",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "getChunkSize",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "getLendings",
-        "outputs": [
-            {
-                "components": [
-                    {
-                        "internalType": "address",
-                        "name": "borrower",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "chunkPrice",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "debt",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "fund",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "dailyInterestRate",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "openingTime",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "reviewingTime",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "closingTime",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "startTime",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "endTime",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "debtTerm",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "tokenId",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "tokenContract",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "enum Pawnshop.Status",
-                        "name": "status",
-                        "type": "uint8"
-                    }
-                ],
-                "internalType": "struct Pawnshop.Lending[]",
-                "name": "",
-                "type": "tuple[]"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "_lendingId",
-                "type": "uint256"
-            }
-        ],
-        "name": "getParticipants",
-        "outputs": [
-            {
-                "components": [
-                    {
-                        "internalType": "address",
-                        "name": "account",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    }
-                ],
-                "internalType": "struct Pawnshop.Participant[]",
-                "name": "",
-                "type": "tuple[]"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "_lendingId",
-                "type": "uint256"
-            }
-        ],
-        "name": "lend",
-        "outputs": [],
-        "stateMutability": "payable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "_operator",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "_from",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_tokenId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "bytes",
-                "name": "_data",
-                "type": "bytes"
-            }
-        ],
-        "name": "onERC721Received",
-        "outputs": [
-            {
-                "internalType": "bytes4",
-                "name": "",
-                "type": "bytes4"
-            }
-        ],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "_lendingId",
-                "type": "uint256"
-            }
-        ],
-        "name": "pay",
-        "outputs": [],
-        "stateMutability": "payable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "_chunkSize",
-                "type": "uint256"
-            }
-        ],
-        "name": "setChunkSize",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "_rate",
-                "type": "uint256"
-            }
-        ],
-        "name": "setDailyInterestRate",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "statusUpdater",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    }
-]
+
 const contractAddress  = "0xa8a2abd290db1d4b7A6F5E00CA9F3d118861dDBd"
+var tokenId=0;
+var tokenAddress="";
+var contractType="";
+var openingTime=0;
+var endTime=0;
+var amount=0;
+
 
 /* TODO: Add Moralis Authentication code */
 async function login() {
@@ -320,7 +20,7 @@ async function login() {
     
     if (!user) {
       user = await Moralis.authenticate({ signingMessage: "Log in using Moralis" })
-        .then(function (user) {
+        .then(function (user) {  
           console.log("logged in user:", user);
           console.log(user.get("ethAddress"));
           console.log(user.get("username"));
@@ -336,30 +36,181 @@ async function logOut() {
   }
 
 async function getNFTsToLend(){  
-    const options = {
-        contractAddress: "0xa8a2abd290db1d4b7A6F5E00CA9F3d118861dDBd",
-        functionName: "getLendings",
-        abi: ABI,
-        params:{},
-      }
-    const NFTsToLend =  await Moralis.executeFunction(options)
-    console.log(NFTsToLend)
-    }
-
-async function lend(){
+    const abi =await getMetadata('../../contracts/ABI/Pawnshop.json');
     const options = {
         contractAddress: contractAddress,
-        functionName: "lend",
-        abi: ABI,
-        msgValue: "200000000000000000",
-        params:{
-            _lendingId: 3,
-        },
+        functionName: "getLendings",
+        abi: abi,
+        params:{},
+      }
+    var URLx="";
+    let ele = document.getElementById('iterative');
+    const information =  await Moralis.executeFunction(options)
+    console.log(information);
+    for (const index in information) {
+      URLx= 'https://testnets-api.opensea.io/api/v1/asset/' + information[index].tokenContract +'/'+information[index].tokenId+'/';
+      //console.log(URLx);
+      var metadata="";
+      //console.log(information[index].tokenContract);
+      metadata=getMetadata(URLx); 
+      await delay(1.2);
+      var data="";
+      metadata.then(function(result) {
+        // here you can use the result of promise
+              //console.log(result);
+              data= result.asset_contract.image_url;
+              if(data !=null){
+                //If NFT have image
+                ele.innerHTML +='<div class="col"> <div class="card shadow-sm"> <img width="100%" height="100%" alt="NFT" src=" '+ result.asset_contract.image_url+'"/> <div class="card-body"> <p class="card-text">' + result.token_id+'</p><p class="card-text">' + result.asset_contract.name +'</p><p class="card-text">' + result.asset_contract.symbol +'</p><div class="d-flex justify-content-between align-items-center"> <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="enable(\'' +result.asset_contract.address  + '\',\''+ result.asset_contract.schema_name  +"\'," +result.token_id +","+  information[index].amount +"," + information[index].chunkPrice+"," + information[index].openingTime +","+ information[index].closingTime +' )">Lend</button> </div></div></div></div>';
+                //To-Do Decode JSON to obtaing image
+              }
+              else
+              {
+                ele.innerHTML +='<div class="col"> <div class="card shadow-sm"> <canvas width="100%" height="100%" style="border: 1px solid; background-color: #007ad5;"> </canvas> <div class="card-body"> <p class="card-text">' + result.token_id +'</p><p class="card-text">' + result.asset_contract.name +'</p><p class="card-text">' + result.asset_contract.symbol +'</p><div class="d-flex justify-content-between align-items-center"> <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="enable(\'' + result.asset_contract.address  + '\',\''+ result.asset_contract.schema_name +"\'," +result.token_id +"," + information[index].amount  +"," + information[index].chunkPrice+"," + information[index].openingTime +","+ information[index].closingTime +' )">Lend</button> </div></div></div></div>';
+              }
+      });
     }
-    const lendMoney = await Moralis.executeFunction(options)
+  }
+async function getChunkSize()
+{
+  const abi =await getMetadata('../../contracts/ABI/Pawnshop.json');
+    const options = {
+        contractAddress: contractAddress,
+        functionName: "getLendings",
+        abi: abi,
+        params:{},
+      }
+    const information =  await Moralis.executeFunction(options)
 }
 
+async function getMetadata(url) 
+  {
+    let response = await fetch(url);
+    let data = await response.json()
+    return data;
+  }
+
+//GetDate  
+async function enable(_tokenAddress,_contractType,_tokenId,_amount,_chunkPrice,_openingTime,_endTime) {
+    tokenAddress= _tokenAddress;
+    contractType=_contractType;
+    tokenId=_tokenId;
+    amount=_amount;
+    chunkPrice= _chunkPrice;
+    openingTime=_openingTime;
+    endTime=_endTime;
+    amount= amount / (10**18);
+    chunkPrice= chunkPrice/ (10**18);
+    document.getElementById('chunkAmount').innerHTML ="<strong>" + amount.toString() + "ETH" + "</strong>";
+    document.getElementById('chunkPrice').innerHTML ="<strong>" + chunkPrice.toString() + "ETH" + "</strong>";
+    document.getElementById('openingTime').innerHTML ="<strong>" + await unixTimeToDate(openingTime) + "</strong>";
+    document.getElementById('endTime').innerHTML =  "<strong>" +await unixTimeToDate(endTime)+ "</strong>";
+
+}
+
+function delay(n){
+    return new Promise(function(resolve){
+        setTimeout(resolve,n*1000);
+    });
+}
+
+async function unixTimeToDate(unixTimestamp)
+{
+  const milliseconds = unixTimestamp * 1000
+
+  const dateObject = new Date(milliseconds)
+
+  let day = dateObject.getDate()
+  let month = dateObject.getMonth() + 1
+  let year = dateObject.getFullYear()
+  let finalDate="";
+  if(month < 10){
+    finalDate=day + "/" + "0" + month + "/" + year;
+  }else{
+    finalDate=day + "/" + month + "/" + year;
+  }
+  return finalDate; 
+ 
+}
+async function usdToWei()
+{
+  const addr = "0x8A753747A1Fa494EC906cE90E9f37563A8AF630e"
+  const web3 = new Web3("https://eth-rinkeby.alchemyapi.io/v2/U-LGMY7cgdXhQ6TPuaRHI8Mr3BC1zKag")
+  //Cambia el abi
+  const abi =await getMetadata('../../contracts/ABI/ChainlinkPriceFeed.json');
+  //./main.js
+  const priceFeed = new web3.eth.Contract(abi, addr);
+  var promise;
+  promise=priceFeed.methods.latestRoundData().call()
+    .then((roundData) => {
+        return roundData.answer * 10000000000;
+        
+    })
+  return promise;
+}
+async function lendConfirm()
+{
+  var amountETH = document.getElementById('amountETH').value;
+  let result = await usdToWei();
+  document.getElementById('amountETHER').innerHTML = '<strong>Amount (ETH):</strong>' + amountETH;
+  document.getElementById('amountETHToUSD').innerHTML = '<strong>Amount (USD):</strong>' + amountETH * (result/ (10**18));
+  document.getElementById('chainlinkETHUSD').innerHTML = '<strong>ETH/USD:</strong>' + result/ (10**18);
+}
+async function lend(){
+  document.getElementById('btn-lendxC').style.display = "none";
+  document.getElementById('btn-lendx').style.display = "none";
+  document.getElementById('btn-waitLend').style.display = "block";
+  //amount = document.getElementById('amount').value;
+  var dateMoney = document.getElementById('datemoney').value;
+  var datePayDebt = document.getElementById('datepaydebt').value;
+  moneyDay = getNumberOfDays(Date.now(), dateMoney);
+  moneyDay= moneyDay + 1;
+  
+  debtDay = getNumberOfDays(Date.now(), datePayDebt);
+  debtDay= debtDay + 1;
+  let amountWEI = document.getElementById('amountETH').value * 10 ** 18;
+  
+  console.log("WEI:" + amountWEI);
+  console.log("Expiration term:" + moneyDay);
+  console.log("Debt term:" + debtDay);
+  console.log("TokenId:" + tokenId);
+  console.log("TokenAddress:" + tokenAddress);
+  //Cuanto quiere
+  //Cambia el ABI
+  const abi =await getMetadata('../../contracts/ABI/Pawnshop.json');
+
+  const options = {
+    contractAddress: _contractAddress,//"Nuestro contrato"
+    functionName: "borrow",
+    abi: abi,
+    params:{
+      _amount:amountWEI.toString(),
+      _expirationTerm:moneyDay,
+      _debtTerm:debtDay,
+      _tokenId:tokenId,
+      _tokenContract:tokenAddress//"Contrato del token"
+    },
+  }
+  //uint256 _amount, uint256 _expirationTerm, uint256 _debtTerm, uint256 _tokenId, address _tokenContract
+  const addCount =  await Moralis.executeFunction(options)
+  $('#exampleModal').modal('hide');
+  $('#myModal2').modal('hide');
+  document.getElementById('btn-pawnxC').style.display = "none";
+  document.getElementById('btn-pawnx').style.display = "none";
+  document.getElementById('btn-waitPawn').style.display = "none";
+}
+
+
+async function onlyNumberKey(evt) {        
+  // Only ASCII character in that range allowed
+  var ASCIICode = (evt.which) ? evt.which : evt.keyCode
+  if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57))
+  {
+      return false;
+  }
+}
+  document.getElementById("btn-lendx").onclick = lend;
+  document.getElementById("btn-lendConfirm").onclick = lendConfirm;
   document.getElementById("btn-login").onclick = login;
   document.getElementById("btn-logout").onclick = logOut;
   document.getElementById("btn-balance").onclick = getNFTsToLend;
-  document.getElementById("btn-lend").onclick = lend;
