@@ -33,5 +33,11 @@ describe("Pawnshop contract", function () {
         await hardhatPawnshop.setChunkSize(10000);
         const chunkSize = await hardhatPawnshop.getChunkSize();
         expect(chunkSize).to.equal(10000);
+    });
+
+    it("Set daily interest rate", async function() {
+        await hardhatPawnshop.setDailyInterestRate(10000);
+        const dailyInterestRate = await hardhatPawnshop.getDailyInterestRate();
+        expect(dailyInterestRate).to.equal(10000);
     })
 });

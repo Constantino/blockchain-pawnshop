@@ -52,6 +52,10 @@ contract Pawnshop is NFTHandler{
     function setDailyInterestRate(uint256 _rate) public {
         dailyInterestRate = _rate;
     }
+
+    function getDailyInterestRate() view public returns(uint256) {
+        return dailyInterestRate;
+    }
     
     function setChunkSize(uint256 _chunkSize) public {
         chunkSize = _chunkSize;
