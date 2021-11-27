@@ -82,7 +82,7 @@ contract Pawnshop is NFTHandler{
         
         lendings.push(
             Lending(
-            counter++,
+            counter,
             msg.sender,
             _amount,
             chunkPrice,
@@ -100,6 +100,8 @@ contract Pawnshop is NFTHandler{
             Status.Review
             )
         );
+
+        counter++;
     }
     
     function getChunkSize() view public returns(uint256) {
