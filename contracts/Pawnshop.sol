@@ -15,7 +15,7 @@ contract Pawnshop is NFTHandler{
         owner = msg.sender;
     }
     
-    enum Status { Review, Open, ReadyToLend, Locked, Paid, Terminated }
+    enum Status { Review, Open, ReadyToLend, Locked, Paid, ForSale, Sold, Terminated }
     
     struct Participant {
         address account;
@@ -134,7 +134,7 @@ contract Pawnshop is NFTHandler{
         
         lendings[_lendingId].status = Status.Locked;
         lendings[_lendingId].startTime = block.timestamp;
-        lendings[_lendingId].endTime = lendings[_lendingId].startTime + 86400*lendings[_lendingId].debtTerm;
+        lendings[_lendingId].endTime = lendings[_lendingId].startTime + 60*lendings[_lendingId].debtTerm;//86400*lendings[_lendingId].debtTerm;
         uint256 interest = lendings[_lendingId].debtTerm*lendings[_lendingId].dailyInterestRate;
         lendings[_lendingId].debt = lendings[_lendingId].amount + interest;
         
@@ -182,13 +182,16 @@ contract Pawnshop is NFTHandler{
             else if(status == Status.Locked) {
                 // If lending is locked and user did not pay on time, then terminate lending
                 if(currentTimestamp >= lendings[id].endTime){
-                    lendings[id].status = Status.Terminated;
+                    lendings[id].status = Status.ForSale;/////MODIFIED TO BUY THE NFT INSTEAD OF TERMINATED
                 }
             } else if(status == Status.Paid) {
                 distributePayments(id);
                 returnNFT(id);
                 lendings[id].status = Status.Terminated;
-            } 
+            } else if(status == Status.Sold){
+                distributePayments(id);
+                lendings[id].status = Status.Terminated;
+            }
         }
         
         
@@ -216,9 +219,18 @@ contract Pawnshop is NFTHandler{
         require(block.timestamp < lendings[_lendingId].endTime, "Payment not allowed, end time reached.");
         lendings[_lendingId].status = Status.Paid;
     }
+
+    //////ADDING FUNCTION TO BUY THE NFT 
+    function Buy(uint256 _lendingId)public payable{
+        require(msg.value == lendings[_lendingId].debt, "Check the price for this");
+        require(lendings[_lendingId].status == Status.ForSale, "Payment not allowed, this NFT is not for sale yet");
+        require(block.timestamp > lendings[_lendingId].endTime, "Payment not allowed, this NFT is not for sale yet");
+        psTransferNFT(msg.sender, lendings[_lendingId].tokenId, lendings[_lendingId].tokenContract);
+        lendings[_lendingId].status = Status.Sold;
+    }
     
     function distributePayments(uint256 _lendingId) private {
-        require(lendings[_lendingId].status == Status.Paid, "Distribution of payments not allowed.");
+        require(lendings[_lendingId].status == Status.Paid || lendings[_lendingId].status == Status.Sold, "Distribution of payments not allowed.");
 
         uint256 participantsLen = participants[_lendingId].length;
 
@@ -230,5 +242,4 @@ contract Pawnshop is NFTHandler{
             }
         }
     }
-    
 }
