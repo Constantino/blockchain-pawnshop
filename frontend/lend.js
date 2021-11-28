@@ -193,10 +193,10 @@ async function lend(){
   console.log(options);
   const addCount =  await Moralis.executeFunction(options);
   $('#exampleModal').modal('hide');
-  $('#myModal2').modal('hide');
-  document.getElementById('btn-pawnxC').style.display = "none";
-  document.getElementById('btn-pawnx').style.display = "none";
-  document.getElementById('btn-waitPawn').style.display = "none";
+  $('#myModal').modal('hide');
+  document.getElementById('btn-lendxC').style.display = "none";
+  document.getElementById('btn-lendx').style.display = "none";
+  document.getElementById('btn-lendPawn').style.display = "none";
 }
 
 
