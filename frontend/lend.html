@@ -10,9 +10,9 @@
     <script src="./content/web3/bignumber.min.js"></script>
     <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="./content/bootstrap/css/bootstrap.min.css" />    
+    <script src="./content/jquery/jquery-3.6.0.min.js"></script>
+    <script src="./content/bootstrap/scripts/bootstrap.min.js"></script> 
     <title>PawnShop</title>
 
     <style>
@@ -33,26 +33,26 @@
   </head>
   <body>
 <header>
-  <nav class="navbar navbar-inverse">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>                        
-        </button>
-        <a class="navbar-brand" href="#">MTC Blockchain Pawnshop</a>
-      </div>
-      <div class="collapse navbar-collapse" id="myNavbar">
-        <ul class="nav navbar-nav">
-          <li><a href="./index.html">Pawn</a></li>
-          <li class="active"><a href="./lend.html">Lend</a></li>
-          <li><a href="./pay.html">Pay</a></li>
-          <li><a href="./Sale.html">Sale</a></li>
-        </ul>
-        <ul class="nav navbar-nav navbar-right">
-          <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-          <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+      <a class="navbar-brand" href="#">PawnShop</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarScroll">
+        <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="index.html">Borrow</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="lend.html">Lend</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="pay.html">Pay</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="Sale.html">Sale</a>
+          </li>
         </ul>
       </div>
     </div>
