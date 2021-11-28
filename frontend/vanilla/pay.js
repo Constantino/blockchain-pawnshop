@@ -183,8 +183,7 @@ async function pay(_xlendingId, _xdebt){
   console.log("TokenId:" + tokenId);
   console.log("TokenAddress:" + tokenAddress);*/
   //Cuanto quiere
-  console.log(_xlendingId)
-  console.log(debt)
+  _xlendingId = _xlendingId.toString();
   //Cambia el ABI
   const abi =await getMetadata('../../contracts/ABI/Pawnshop.json');
 
