@@ -1,8 +1,8 @@
 /* TODO: Add Moralis init code */
 /* Moralis init code */
-const serverUrl = "https://xnqjh1qklvb8.usemoralis.com:2053/server";
-const appId = "tsFobG1D7u1kGPHSIm3bOvDO43RQ76OJwCoEI6LT";
-const _contractAddress="0x8146d8d50B7182ca48FE227b2cdb423ed75374D5";
+const serverUrl = "https://8fn3mvvwwjxf.usemoralis.com:2053/server";
+const appId = "UglFwQM02SHSpEGv17ffGsChAXPUmr4BkJjgpeYU ";
+const _contractAddress="0x8cFc75FeF3194872FaB7364959FC69D207a22aC9";
 Moralis.start({ serverUrl, appId });
 var tokenId=0;
 var tokenAddress="";
@@ -51,32 +51,22 @@ async function balance(){
     var URLx="";
     let ele = document.getElementById('iterative');
     information = results;
+    console.log(await information)
     
 
     for (const index in information) {
-      
-      if(information[index].attributes.contract_type=="ERC721")
-      {
-      URLx= 'https://testnets-api.opensea.io/api/v1/asset/' + information[index].attributes.token_address  +'/'+information[index].attributes.token_id+'/';
-      var metadata="";
-      metadata=getMetadata(URLx); 
-      await delay(1.2);
-      var data="";
-      metadata.then(function(result) {
-        // here you can use the result of promise
-              data= result.asset_contract.image_url;
-              if(data !=null){
+              dataxImage= information[index].attributes.token_uri;
+              if(dataxImage !=null){
                 //If NFT have image
-                ele.innerHTML +='<div class="col"> <div class="card shadow-sm"> <img width="100%" height="100%" alt="NFT" src=" '+ result.asset_contract.image_url +'"/> <div class="card-body"> <p class="card-text">' + information[index].attributes.token_id +'</p><p class="card-text">' + information[index].attributes.name +'</p><p class="card-text">' + information[index].attributes.symbol +'</p><div class="d-flex justify-content-between align-items-center"> <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="enable(\'' +information[index].attributes.token_address  + '\',\''+ information[index].attributes.contract_type +"\'," +information[index].attributes.token_id+' )">Enable</button> </div></div></div></div>';
+                ele.innerHTML +='<div class="col"> <div class="card shadow-sm"> <img width="100%" height="100%" alt="NFT" src=" '+  dataxImage+'"/> <div class="card-body"> <p class="card-text">' + information[index].attributes.token_id +'</p><p class="card-text">' + information[index].attributes.name +'</p><p class="card-text">' + information[index].attributes.symbol +'</p><div class="d-flex justify-content-between align-items-center"> <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="enable(\'' +information[index].attributes.token_address  + '\',\''+ information[index].attributes.contract_type +"\'," +information[index].attributes.token_id+' )">Enable</button> </div></div></div></div>';
                 //To-Do Decode JSON to obtaing image
               }
               else
               {
                 ele.innerHTML +='<div class="col"> <div class="card shadow-sm"> <canvas width="100%" height="100%" style="border: 1px solid; background-color: #007ad5;"> </canvas> <div class="card-body"> <p class="card-text">' + information[index].attributes.token_id +'</p><p class="card-text">' + information[index].attributes.name +'</p><p class="card-text">' + information[index].attributes.symbol +'</p><div class="d-flex justify-content-between align-items-center"> <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="enable(\'' +information[index].attributes.token_address  + '\',\''+ information[index].attributes.contract_type +"\'," +information[index].attributes.token_id+' )">Enable</button> </div></div></div></div>';
               }
-      });
-      }
-      }
+      
+    }
      
       
     
@@ -183,8 +173,8 @@ function getNumberOfDays(start, end) {
 
 async function usdToWei()
 {
-  const addr = "0x8A753747A1Fa494EC906cE90E9f37563A8AF630e"
-  const web3 = new Web3("https://eth-rinkeby.alchemyapi.io/v2/U-LGMY7cgdXhQ6TPuaRHI8Mr3BC1zKag")
+  const addr = "0x9326BFA02ADD2366b30bacB125260Af641031331"
+  const web3 = new Web3("https://eth-kovan.alchemyapi.io/v2/C2NURICoXsxwnjUpRyaIPfC-H319846C")
   //Cambia el abi
   const abi =await getMetadata('./content/ABI/ChainlinkPriceFeed.json');
   //./main.js
