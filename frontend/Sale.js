@@ -59,9 +59,9 @@ async function getNFTsToLend(){
 
               // here you can use the result of promise
               //console.log(result);
-              dataxImage= ""; //Image
-              let contractName="";
-              let symbol="";
+              dataxImage= "https://gateway.pinata.cloud/ipfs/QmbfFMVicLSPi2HTqa5ggKbn23Mgrmu5H9SWDU7Ag6AKYy"; //Image
+              let contractName="PawnShop";
+              let symbol="CAI";
               let schema_name ="ERC721";
               console.log(informationFiltered[index].id)
               if(dataxImage !=null){

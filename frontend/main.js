@@ -55,7 +55,7 @@ async function balance(){
     
 
     for (const index in information) {
-              dataxImage= information[index].attributes.token_uri;
+              dataxImage="https://gateway.pinata.cloud/ipfs/QmbfFMVicLSPi2HTqa5ggKbn23Mgrmu5H9SWDU7Ag6AKYy";
               if(dataxImage !=null){
                 //If NFT have image
                 ele.innerHTML +='<div class="col"> <div class="card shadow-sm"> <img width="100%" height="100%" alt="NFT" src=" '+  dataxImage+'"/> <div class="card-body"> <p class="card-text">' + information[index].attributes.token_id +'</p><p class="card-text">' + information[index].attributes.name +'</p><p class="card-text">' + information[index].attributes.symbol +'</p><div class="d-flex justify-content-between align-items-center"> <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="enable(\'' +information[index].attributes.token_address  + '\',\''+ information[index].attributes.contract_type +"\'," +information[index].attributes.token_id+' )">Enable</button> </div></div></div></div>';
