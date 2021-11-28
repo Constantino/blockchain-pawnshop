@@ -36,8 +36,13 @@ async function logOut() {
     await Moralis.User.logOut();
     console.log("logged out");
   }
-
+  function financial(x) {
+    return Number.parseFloat(x).toFixed(2);
+  }
 async function getNFTsToLend(){  
+    let price= await usdToWei();
+    price= price / (10 **18);
+    console.log(price);
     const abi =await getMetadata('./content/ABI/Pawnshop.json');
     const options = {
         contractAddress: contractAddress,
@@ -68,13 +73,13 @@ async function getNFTsToLend(){
               console.log(informationFiltered[index].id)
               if(data !=null){
                 //If NFT have image
-                ele.innerHTML +='<div class="col"> <div class="card shadow-sm"> <img width="100%" height="100%" alt="NFT" src=" '+ result.asset_contract.image_url+'"/> <div class="card-body"> <p class="card-text">' + informationFiltered[index].tokenId+'</p><p class="card-text">' + result.asset_contract.name +'</p><p class="card-text">' + result.asset_contract.symbol +'</p><div class="d-flex justify-content-between align-items-center"> <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="enable(\'' +result.asset_contract.address  + '\',\''+ result.asset_contract.schema_name  +"\',"+informationFiltered[index].id+"," +result.token_id +","+  informationFiltered[index].amount +"," + informationFiltered[index].chunkPrice+"," + informationFiltered[index].openingTime +","+ informationFiltered[index].closingTime +","+ informationFiltered[index].debt +' )">Buy</button> </div></div></div></div>';
+                ele.innerHTML +='<div class="col"> <div class="card shadow-sm"> <img width="100%" height="100%" alt="NFT" src=" '+ result.asset_contract.image_url+'"/> <div class="card-body"> <p class="card-text">' + informationFiltered[index].tokenId+'</p><p class="card-text">' + result.asset_contract.name +'</p><p class="card-text">' + result.asset_contract.symbol +'</p><p class="card-text">Debt [USD]:$'  + financial(price * (informationFiltered[index].debt /10**18)) +'</p><p class="card-text">Debt [WEI]:' + informationFiltered[index].debt +'</p><div class="d-flex justify-content-between align-items-center"> <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="enable(\'' +result.asset_contract.address  + '\',\''+ result.asset_contract.schema_name  +"\',"+informationFiltered[index].id+"," +result.token_id +","+  informationFiltered[index].amount +"," + informationFiltered[index].chunkPrice+"," + informationFiltered[index].openingTime +","+ informationFiltered[index].closingTime +","+ informationFiltered[index].debt +' )">Buy</button> </div></div></div></div>';
                 //To-Do Decode JSON to obtaing image
               
               }
               else
               {
-                ele.innerHTML +='<div class="col"> <div class="card shadow-sm"> <canvas width="100%" height="100%" style="border: 1px solid; background-color: #007ad5;"> </canvas> <div class="card-body"> <p class="card-text">' + informationFiltered[index].tokenId +'</p><p class="card-text">' + result.asset_contract.name +'</p><p class="card-text">' + result.asset_contract.symbol +'</p><div class="d-flex justify-content-between align-items-center"> <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="enable(\'' + result.asset_contract.address  + '\',\''+ result.asset_contract.schema_name +"\',"+informationFiltered[index].id+"," +result.token_id +"," + informationFiltered[index].amount  +"," + informationFiltered[index].chunkPrice+"," + informationFiltered[index].openingTime +","+ informationFiltered[index].closingTime + ","+ informationFiltered[index].debt +' )">Buy</button> </div></div></div></div>';
+                ele.innerHTML +='<div class="col"> <div class="card shadow-sm"> <canvas width="100%" height="100%" style="border: 1px solid; background-color: #007ad5;"> </canvas> <div class="card-body"> <p class="card-text">' + informationFiltered[index].tokenId +'</p><p class="card-text">' + result.asset_contract.name +'</p><p class="card-text">' + result.asset_contract.symbol +'</p><p class="card-text">Debt [USD]:$'  + financial(price * (informationFiltered[index].debt /10**18)) +'</p><p class="card-text">Debt [WEI]:' + informationFiltered[index].debt +'</p><div class="d-flex justify-content-between align-items-center"> <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="enable(\'' + result.asset_contract.address  + '\',\''+ result.asset_contract.schema_name +"\',"+informationFiltered[index].id+"," +result.token_id +"," + informationFiltered[index].amount  +"," + informationFiltered[index].chunkPrice+"," + informationFiltered[index].openingTime +","+ informationFiltered[index].closingTime + ","+ informationFiltered[index].debt +' )">Buy</button> </div></div></div></div>';
               }
       });
     }
