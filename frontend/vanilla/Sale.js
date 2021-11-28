@@ -2,16 +2,18 @@
 /* Moralis init code */
 const serverUrl = "https://xnqjh1qklvb8.usemoralis.com:2053/server";
 const appId = "tsFobG1D7u1kGPHSIm3bOvDO43RQ76OJwCoEI6LT";
-const _contractAddress="0xa8a2abd290db1d4b7A6F5E00CA9F3d118861dDBd";
+const _contractAddress="0x8146d8d50B7182ca48FE227b2cdb423ed75374D5";
 Moralis.start({ serverUrl, appId });
 
-const contractAddress  = "0xa8a2abd290db1d4b7A6F5E00CA9F3d118861dDBd"
+const contractAddress  = "0x8146d8d50B7182ca48FE227b2cdb423ed75374D5"
 var tokenId=0;
 var tokenAddress="";
 var contractType="";
 var openingTime=0;
 var endTime=0;
 var amount=0;
+var lendingId=0;
+var debt=0;
 
 
 /* TODO: Add Moralis Authentication code */
@@ -46,7 +48,7 @@ async function getNFTsToLend(){
     var URLx="";
     let ele = document.getElementById('iterative');
     const information =  await Moralis.executeFunction(options)
-    console.log(information);
+    //console.log(information);
     const informationFiltered = information.filter(x => x.status == "5")
     console.log(informationFiltered)
     for (const index in informationFiltered) {
@@ -62,15 +64,17 @@ async function getNFTsToLend(){
         // here you can use the result of promise
               //console.log(result);
               data= result.asset_contract.image_url;
+              
+              console.log(informationFiltered[index].id)
               if(data !=null){
                 //If NFT have image
-                ele.innerHTML +='<div class="col"> <div class="card shadow-sm"> <img width="100%" height="100%" alt="NFT" src=" '+ result.asset_contract.image_url+'"/> <div class="card-body"> <p class="card-text">' + result.token_id+'</p><p class="card-text">' + result.asset_contract.name +'</p><p class="card-text">' + result.asset_contract.symbol +'</p><div class="d-flex justify-content-between align-items-center"> <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="enable(\'' +result.asset_contract.address  + '\',\''+ result.asset_contract.schema_name  +"\'," +result.token_id +","+  information[index].amount +"," + information[index].chunkPrice+"," + information[index].openingTime +","+ information[index].closingTime +' )">Buy</button> </div></div></div></div>';
+                ele.innerHTML +='<div class="col"> <div class="card shadow-sm"> <img width="100%" height="100%" alt="NFT" src=" '+ result.asset_contract.image_url+'"/> <div class="card-body"> <p class="card-text">' + informationFiltered[index].tokenId+'</p><p class="card-text">' + result.asset_contract.name +'</p><p class="card-text">' + result.asset_contract.symbol +'</p><div class="d-flex justify-content-between align-items-center"> <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="enable(\'' +result.asset_contract.address  + '\',\''+ result.asset_contract.schema_name  +"\',"+informationFiltered[index].id+"," +result.token_id +","+  informationFiltered[index].amount +"," + informationFiltered[index].chunkPrice+"," + informationFiltered[index].openingTime +","+ informationFiltered[index].closingTime +","+ informationFiltered[index].debt +' )">Buy</button> </div></div></div></div>';
                 //To-Do Decode JSON to obtaing image
               
               }
               else
               {
-                ele.innerHTML +='<div class="col"> <div class="card shadow-sm"> <canvas width="100%" height="100%" style="border: 1px solid; background-color: #007ad5;"> </canvas> <div class="card-body"> <p class="card-text">' + result.token_id +'</p><p class="card-text">' + result.asset_contract.name +'</p><p class="card-text">' + result.asset_contract.symbol +'</p><div class="d-flex justify-content-between align-items-center"> <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="enable(\'' + result.asset_contract.address  + '\',\''+ result.asset_contract.schema_name +"\'," +result.token_id +"," + information[index].amount  +"," + information[index].chunkPrice+"," + information[index].openingTime +","+ information[index].closingTime +' )">Buy</button> </div></div></div></div>';
+                ele.innerHTML +='<div class="col"> <div class="card shadow-sm"> <canvas width="100%" height="100%" style="border: 1px solid; background-color: #007ad5;"> </canvas> <div class="card-body"> <p class="card-text">' + informationFiltered[index].tokenId +'</p><p class="card-text">' + result.asset_contract.name +'</p><p class="card-text">' + result.asset_contract.symbol +'</p><div class="d-flex justify-content-between align-items-center"> <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="enable(\'' + result.asset_contract.address  + '\',\''+ result.asset_contract.schema_name +"\',"+informationFiltered[index].id+"," +result.token_id +"," + informationFiltered[index].amount  +"," + informationFiltered[index].chunkPrice+"," + informationFiltered[index].openingTime +","+ informationFiltered[index].closingTime + ","+ informationFiltered[index].debt +' )">Buy</button> </div></div></div></div>';
               }
       });
     }
@@ -95,9 +99,10 @@ async function getMetadata(url)
   }
 
 //GetDate  
-async function enable(_tokenAddress,_contractType,_tokenId,_amount,_chunkPrice,_openingTime,_endTime) {
+async function enable(_tokenAddress,_contractType,_lendingId, _tokenId,_amount,_chunkPrice,_openingTime,_endTime, _debt) {
     tokenAddress= _tokenAddress;
     contractType=_contractType;
+    lendingId=_lendingId;
     tokenId=_tokenId;
     amount=_amount;
     chunkPrice= _chunkPrice;
@@ -105,6 +110,8 @@ async function enable(_tokenAddress,_contractType,_tokenId,_amount,_chunkPrice,_
     endTime=_endTime;
     amount= amount / (10**18);
     chunkPrice= chunkPrice/ (10**18);
+    debt=_debt;
+    buy(lendingId, debt);
     document.getElementById('chunkAmount').innerHTML ="<strong>" + amount.toString() + "ETH" + "</strong>";
     document.getElementById('chunkPrice').innerHTML ="<strong>" + chunkPrice.toString() + "ETH" + "</strong>";
     document.getElementById('openingTime').innerHTML ="<strong>" + await unixTimeToDate(openingTime) + "</strong>";
@@ -160,9 +167,9 @@ async function lendConfirm()
   document.getElementById('amountETHToUSD').innerHTML = '<strong>Amount (USD):</strong>' + amountETH * (result/ (10**18));
   document.getElementById('chainlinkETHUSD').innerHTML = '<strong>ETH/USD:</strong>' + result/ (10**18);
 }
-async function Buy(){
+async function buy(_xlendingId, _xdebt){
 
-  debtDay = getNumberOfDays(Date.now(), datePayDebt);
+  /*debtDay = getNumberOfDays(Date.now(), datePayDebt);
   debtDay= debtDay + 1;
   let amountWEI = document.getElementById('amountETH').value * 10 ** 18;
   
@@ -170,19 +177,22 @@ async function Buy(){
   console.log("Expiration term:" + moneyDay);
   console.log("Debt term:" + debtDay);
   console.log("TokenId:" + tokenId);
-  console.log("TokenAddress:" + tokenAddress);
+  console.log("TokenAddress:" + tokenAddress);*/
   //Cuanto quiere
+  console.log(_xlendingId)
+  console.log(debt)
   //Cambia el ABI
   const abi =await getMetadata('../../contracts/ABI/Pawnshop.json');
 
   const options = {
     contractAddress: _contractAddress,//"Nuestro contrato"
-    functionName: "Buy",
+    functionName: "buy",
     abi: abi,
     params:{
-      _amount:amountWEI.toString(),
-      _tokenId:tokenId
+      _lendingId: _xlendingId,
+      //amount: debt
     },
+    msgValue: debt
   }
   //uint256 _amount, uint256 _expirationTerm, uint256 _debtTerm, uint256 _tokenId, address _tokenContract
   const buy =  await Moralis.executeFunction(options)
