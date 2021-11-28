@@ -2,7 +2,7 @@
 /* Moralis init code */
 const serverUrl = "https://xnqjh1qklvb8.usemoralis.com:2053/server";
 const appId = "tsFobG1D7u1kGPHSIm3bOvDO43RQ76OJwCoEI6LT";
-const _contractAddress="0x8146d8d50B7182ca48FE227b2cdb423ed75374D5";
+const _contractAddress="0xD54a5216A8634459519EbaEbb8D03cc231004929";
 Moralis.start({ serverUrl, appId });
 var tokenId=0;
 var tokenAddress="";
