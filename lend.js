@@ -34,7 +34,7 @@ async function logOut() {
   }
 
 async function getNFTsToLend(){  
-    const abi =await getMetadata('../../contracts/ABI/Pawnshop.json');
+    const abi =await getMetadata('./content/ABI/Pawnshop.json');
     const options = {
         contractAddress: _contractAddress,
         functionName: "getLendings",
@@ -77,7 +77,7 @@ async function getNFTsToLend(){
   }
 async function getChunkSize()
 {
-  const abi =await getMetadata('../../contracts/ABI/Pawnshop.json');
+  const abi =await getMetadata('./content/ABI/Pawnshop.json');
     const options = {
         contractAddress: contractAddress,
         functionName: "getChunkSize",
@@ -142,7 +142,7 @@ async function usdToWei()
   const addr = "0x8A753747A1Fa494EC906cE90E9f37563A8AF630e"
   const web3 = new Web3("https://eth-rinkeby.alchemyapi.io/v2/U-LGMY7cgdXhQ6TPuaRHI8Mr3BC1zKag")
   //Cambia el abi
-  const abi =await getMetadata('../../contracts/ABI/ChainlinkPriceFeed.json');
+  const abi =await getMetadata('./content/ABI/ChainlinkPriceFeed.json');
   //./main.js
   const priceFeed = new web3.eth.Contract(abi, addr);
   var promise;
@@ -175,7 +175,7 @@ async function lend(){
   document.getElementById('btn-lendx').style.display = "none";
   document.getElementById('btn-waitLend').style.display = "block";
   
-  const abi =await getMetadata('../../contracts/ABI/Pawnshop.json');
+  const abi =await getMetadata('./content/ABI/Pawnshop.json');
 
   lendingId=lendingId.toString();
   console.log("Final"+  lendingId.toString());
