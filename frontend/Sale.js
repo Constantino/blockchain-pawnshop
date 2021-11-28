@@ -1,7 +1,7 @@
 /* TODO: Add Moralis init code */
 /* Moralis init code */
 const serverUrl = "https://8fn3mvvwwjxf.usemoralis.com:2053/server";
-const appId = "UglFwQM02SHSpEGv17ffGsChAXPUmr4BkJjgpeYU ";
+const appId = "UglFwQM02SHSpEGv17ffGsChAXPUmr4BkJjgpeYU";
 Moralis.start({ serverUrl, appId });
 
 const contractAddress  = "0x8cFc75FeF3194872FaB7364959FC69D207a22aC9"
