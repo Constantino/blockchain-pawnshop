@@ -1,8 +1,8 @@
 /* TODO: Add Moralis init code */
 /* Moralis init code */
-const serverUrl = "https://eplrzhxmsawi.usemoralis.com:2053/server";
-const appId = "pUNHFsDneuqyIWs6wGA3z0eM8GgtOU0VzryS9gBk";
-const _contractAddress="0xa8a2abd290db1d4b7A6F5E00CA9F3d118861dDBd";
+const serverUrl = "https://xnqjh1qklvb8.usemoralis.com:2053/server";
+const appId = "tsFobG1D7u1kGPHSIm3bOvDO43RQ76OJwCoEI6LT";
+const _contractAddress="0x8146d8d50B7182ca48FE227b2cdb423ed75374D5";
 Moralis.start({ serverUrl, appId });
 var tokenId=0;
 var tokenAddress="";

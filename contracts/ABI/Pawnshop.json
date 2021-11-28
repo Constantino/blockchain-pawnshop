@@ -80,6 +80,19 @@
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_lendingId",
+				"type": "uint256"
+			}
+		],
+		"name": "buy",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"name": "getChunkSize",
 		"outputs": [
@@ -94,10 +107,129 @@
 	},
 	{
 		"inputs": [],
+		"name": "getDailyInterestRate",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_lendingId",
+				"type": "uint256"
+			}
+		],
+		"name": "getLending",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "borrower",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "chunkPrice",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "debt",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "fund",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "dailyInterestRate",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "openingTime",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "reviewingTime",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "closingTime",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "startTime",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "endTime",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "debtTerm",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "tokenContract",
+						"type": "address"
+					},
+					{
+						"internalType": "enum Pawnshop.Status",
+						"name": "status",
+						"type": "uint8"
+					}
+				],
+				"internalType": "struct Pawnshop.Lending",
+				"name": "",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "getLendings",
 		"outputs": [
 			{
 				"components": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
 					{
 						"internalType": "address",
 						"name": "borrower",
