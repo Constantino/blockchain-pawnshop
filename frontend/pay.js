@@ -4,7 +4,7 @@ const serverUrl = "https://8fn3mvvwwjxf.usemoralis.com:2053/server";
 const appId = "UglFwQM02SHSpEGv17ffGsChAXPUmr4BkJjgpeYU";
 Moralis.start({ serverUrl, appId });
 
-const contractAddress  = "0x8cFc75FeF3194872FaB7364959FC69D207a22aC9"
+const contractAddress  = "0xDf54404570B5A60A8a3519aaefF35c85444998d0"
 var tokenId=0;
 var tokenAddress="";
 var contractType="";
