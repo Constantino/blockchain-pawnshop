@@ -6,10 +6,10 @@
     <meta name="description" content="">
     <script src="https://unpkg.com/moralis/dist/moralis.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
-    <link rel="stylesheet" href="../content/bootstrap/css/bootstrap.min.css" />
-    <script src="../content/jquery/jquery-3.6.0.min.js"></script>
-    <script src="../content/bootstrap/scripts/bootstrap.min.js"></script>
-    <script src="../content/web3/bignumber.min.js"></script>
+    <link rel="stylesheet" href="./content/bootstrap/css/bootstrap.min.css" />
+    <script src="./content/jquery/jquery-3.6.0.min.js"></script>
+    <script src="./content/bootstrap/scripts/bootstrap.min.js"></script>
+    <script src="./content/web3/bignumber.min.js"></script>
     <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
     <title>PawnShop</title>
 
@@ -66,15 +66,15 @@
   <section class="py-5 text-center container">
     <div class="row py-lg-5">
       <div class="col-lg-6 col-md-8 mx-auto">
-        <h1 class="fw-light">Pawn Shop</h1>
+        <h1 class="fw-light">Lend Money</h1>
         <button id="btn-login"   class="btn btn-warning">Connect Wallet</button>
         <button id="btn-logout" class="btn btn-danger">Logout</button>
-        <button id="btn-balance"  class="btn btn-success">Balance</button>
+        <button id="btn-balance" class="btn btn-primary">Balance</button>
         <p id="demo"></p>
       </div>
     </div>
   </section>
-
+<!-- Iterative -->
   <div class="album py-5 bg-light">
     <div class="container">
 
@@ -88,11 +88,11 @@
 </main>
 <!-- Modal -->
 <form>
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabelx" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Pawn your NFT</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Lend Money</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -104,71 +104,62 @@
           </br>
         -->
           <div class="form-group">
-            <label for="amount" >Amount (ETH):</label>
-            <input type="number"  class="form-control" id="amountETH" onkeypress="return onlyNumberKey(event)" class="numbersOnly">
+            <label for="amount" >Chunks:</label>
+            <input type="number"  class="form-control" id="amountChunks" onkeypress="return onlyNumberKey(event)" class="numbersOnly">
           </div>
-          </br>
           <div class="form-group">
-            <label for="datemoney">Date on which you would like to receive the money</label>
-            <input input type="date" 
-             class="form-control" id="datemoney" >
+            <label>Chunks:</label>
+            <label id="chunkAmount"><strong>0 ETH</strong></label>
           </div>
-        </br>
           <div class="form-group">
-            <label for="datepaydebt">Date to pay debt</label>
-            <input input type="date" 
-             class="form-control" id="datepaydebt" >
+            <label>Chunk Price:</label>
+            <label id="chunkPrice"><strong>0 ETH</strong></label>
           </div>
-          <br>
-          <div>
-            <button type="button" id="btn-transfer" class="btn btn-info">Transfer NFT</button>  
-           
+          <div class="form-group">
+            <label>Chunks Available:</label>
+            <label id="chunkSize"><strong>0</strong></label>
           </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-        <button type="button" id="btn-pawnConfirm" class="btn btn-primary" data-bs-toggle="modal" href="#myModal2">Save changes</button>
+        <button type="button" id="btn-lendConfirm" class="btn btn-primary" data-bs-toggle="modal" href="#myModal">Save changes</button>
       </div>
     </div>
   </div>
 </div>
 </form>
 <!--Second Modal-->
-<div class="modal" id="myModal2" data-bs-backdrop="static">
+<div class="modal" id="myModal" data-bs-backdrop="static">
 	<div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title">Pawn Confirm</h4>
+          <h4 class="modal-title">Lend Confirm</h4>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
         </div><div class="container"></div>
         <div class="modal-body">
           <div class="form-group">
-            <!--<label id="curencyAmount"><strong>Amount (USD):</strong></label>-->
-            <label id="amountETHToUSD"><strong>Amount (USD):</strong></label>
+            <label id="xchunkAmount"><strong>Amount (USD):</strong></label>
             <br>
-            <label id="amountETHER"><strong>Amount (ETH):</strong></label>
+            <label id="xchunkPrice"><strong>Amount (ETH):</strong></label>
             <br>
-            <label id="chainlinkETHUSD"><strong>ETH/USD:</strong></label>
+            <label id="xchunkSize"><strong>ETH/USD:</strong></label>
           </div>
         </div>
         <div class="modal-footer">
-          <button class="btn btn-primary" type="button" id="btn-waitPawn" disabled style="display:none;">
+          <button class="btn btn-primary" type="button" id="btn-waitLend" disabled style="display:none;">
             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
             <span class="sr-only">Loading...</span>
           </button>
-          <a href="#" data-bs-dismiss="modal" class="btn btn-danger" id="btn-pawnxC">Close</a>
-          <button type="button" id="btn-pawnx" class="btn btn-primary">Pawn</button>
+          <a href="#" data-bs-dismiss="modal" class="btn btn-danger" id="btn-lendxC">Close</a>
+          <button type="button" id="btn-lendx" class="btn btn-primary">Lend</button>
           
         </div>
       </div>
     </div>
 </div>
-
-
-
-
+</div>
 <footer class="text-muted py-5">
 </footer>
-<script type="text/javascript" src="./main.js"></script>
+<script type="text/javascript" src="./lend.js"></script>
 </body>
 </html>

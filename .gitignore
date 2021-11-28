@@ -1,5 +1,7 @@
 .idea
-
+.DS_Store
+Build/
+build/
 # Hardhat files
 cache
 artifacts
