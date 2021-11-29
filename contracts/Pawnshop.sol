@@ -9,7 +9,7 @@ contract Pawnshop is NFTHandler{
     address owner;
     uint256 chunkSize;
     uint256 counter;
-    
+    uint256 public xlastTimeStamp;
     constructor(uint256 _rate, uint256 _chunkSize){
         dailyInterestRate = _rate;
         chunkSize = _chunkSize;
@@ -72,12 +72,13 @@ contract Pawnshop is NFTHandler{
         uint256 openingTime = block.timestamp;
         //uint256 reviewingTime = block.timestamp+86400; // now + 1 day
         //TODO: MAKING IT 1 MIN JUST FOR TESTNG
+        //uint256 reviewingTime = block.timestamp+60; // now + 1 day
         uint256 reviewingTime = block.timestamp+60; // now + 1 day
         // closingTime equals openingTime + X days
         //uint256 closingTime = openingTime+86400*_expirationTerm;
         // TODO: MAKING IT 1.5 MIN JUST FOR TESTING
+        //uint256 closingTime = openingTime+60*_expirationTerm;
         uint256 closingTime = openingTime+60*_expirationTerm;
-
         uint256 chunkPrice = chunkNFT(_amount);
         
         lendings.push(
@@ -153,9 +154,9 @@ contract Pawnshop is NFTHandler{
         
     }
     
-    function statusUpdater() public { // TODO: to change to external
-        
-        uint256 currentTimestamp = block.timestamp;
+    function statusUpdater(uint256 _timeStamp)  external { // TODO: to change to external
+        xlastTimeStamp=_timeStamp;
+        uint256 currentTimestamp =_timeStamp;
         uint256 lendingsLength = lendings.length;
         
         for(uint256 id; id < lendingsLength; id++) {
