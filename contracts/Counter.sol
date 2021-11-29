@@ -1,6 +1,7 @@
 //Begin
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.6;
+pragma solidity ^0.8.0;
+import "./Pawnshop.sol";
 
 interface KeeperCompatibleInterface {
     function checkUpkeep(bytes calldata checkData)
@@ -43,19 +44,11 @@ contract Counter is KeeperCompatibleInterface {
     //When checkUpKeep its already to launch, this task is executed
     function performUpkeep(bytes calldata) external override {
         lastTimeStamp = block.timestamp;
-        ContractB contractB = ContractB(contractBAddress);
-        contractB.changeStatus(lastTimeStamp);
+        Pawnshop pawnShop = Pawnshop(contractBAddress);
+        pawnShop.statusUpdater(lastTimeStamp);
+
+        
     }
 }
 
-contract ContractB {
-    uint256 public lastTimeStamp;
 
-    function changeStatus(uint256 _timeStamp) external {
-        lastTimeStamp = _timeStamp;
-    }
-
-    function getTokenName() public view returns (uint256) {
-        return lastTimeStamp;
-    }
-}
