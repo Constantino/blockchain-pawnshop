@@ -1,5 +1,4 @@
 # blockchain-pawnshop
-# blockchain-pawnshop
 About the project :
 We used a Chainlink Keeper to maintain our decentralized application and update important values for our contract and execute certain actions.
 Some of the actions were the following:
