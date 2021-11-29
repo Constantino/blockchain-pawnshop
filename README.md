@@ -21,4 +21,3 @@ kovanProject: You will see that there are no depedencies with OpenSea and it is 
 video: It is the final branch that we use to record the video.
 
 We know that this code can be improved and we gave our best effort at the time possible, we will continue working on other hackhaton and continue using the services of chainlink, moralis and alchemy.
-
